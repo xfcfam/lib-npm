@@ -1,0 +1,22 @@
+# CODEOWNERS — automatic PR reviewers for xfarch/lib-npm.
+#
+# Format: <path-glob>  <owner>...
+# Owners are auto-requested for review on every PR touching the path.
+# The last matching line wins, so put more specific rules at the bottom.
+
+* @isramatrix
+
+# Core XF package — every downstream library depends on it. Breaking
+# changes here ripple through the whole ecosystem.
+/packages/xf/                  @isramatrix
+
+# Per-implementation packages.
+/packages/xf-rest/             @isramatrix
+/packages/xf-sql/              @isramatrix
+/packages/xf-sql-postgres/     @isramatrix
+
+# Build, release, and CI infra.
+/.changeset/                   @isramatrix
+/.github/                      @isramatrix
+/pnpm-workspace.yaml           @isramatrix
+/tsconfig.base.json            @isramatrix

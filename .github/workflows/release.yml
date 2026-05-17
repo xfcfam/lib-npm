@@ -1,0 +1,58 @@
+name: release
+
+# Triggered on push to main. Uses changesets/action to:
+#   - When pending changesets exist: open / update the "Version Packages" PR.
+#   - When that PR is merged (no pending changesets): publish all changed
+#     packages to npm and create GitHub Releases with the CHANGELOG sections
+#     as body.
+#
+# Requires:
+#   - NPM_TOKEN repository secret (npm automation token with publish scope
+#     for the @xfarch organisation).
+#   - GITHUB_TOKEN with `contents: write` (granted via `permissions` below).
+
+on:
+  push:
+    branches: [main]
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Create release PR or publish
+        uses: changesets/action@v1
+        with:
+          publish: pnpm release
+          commit: 'chore: version packages'
+          title: 'chore: version packages'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

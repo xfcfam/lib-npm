@@ -1,0 +1,119 @@
+# Dependabot configuration for the xfarch/lib-npm monorepo.
+#
+# We scan three things:
+#   1. The workspace root (devDependencies: changesets, tsc, etc.).
+#   2. Each published package independently — Dependabot does NOT
+#      walk pnpm workspaces, so every package needs its own entry.
+#   3. The GitHub Actions used by CI and release workflows.
+#
+# Patch + minor updates are grouped per package to avoid PR noise;
+# major updates always come as separate PRs so you can review them.
+
+version: 2
+updates:
+  # ── workspace root ───────────────────────────────────────────────
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ── packages/xf ──────────────────────────────────────────────────
+  - package-ecosystem: "npm"
+    directory: "/packages/xf"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "npm"
+      - "pkg:xf"
+    commit-message:
+      prefix: "chore(deps/xf)"
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ── packages/xf-rest ─────────────────────────────────────────────
+  - package-ecosystem: "npm"
+    directory: "/packages/xf-rest"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "npm"
+      - "pkg:xf-rest"
+    commit-message:
+      prefix: "chore(deps/xf-rest)"
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ── packages/xf-sql ──────────────────────────────────────────────
+  - package-ecosystem: "npm"
+    directory: "/packages/xf-sql"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "npm"
+      - "pkg:xf-sql"
+    commit-message:
+      prefix: "chore(deps/xf-sql)"
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ── packages/xf-sql-postgres ─────────────────────────────────────
+  - package-ecosystem: "npm"
+    directory: "/packages/xf-sql-postgres"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "npm"
+      - "pkg:xf-sql-postgres"
+    commit-message:
+      prefix: "chore(deps/xf-sql-postgres)"
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ── GitHub Actions ───────────────────────────────────────────────
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore(deps)"
