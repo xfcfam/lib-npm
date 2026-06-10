@@ -21,6 +21,7 @@
     }
   },
   "files": ["dist"],
+  "publishConfig": { "access": "public" },
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
@@ -29,8 +30,8 @@
     "test:watch": "vitest"
   },
   "peerDependencies": {
-    "@xfcfam/xf": "workspace:^0.1.0",
-    "@xfcfam/xf-sql": "workspace:^0.1.0"
+    "@xfcfam/xf": "^0.1.0",
+    "@xfcfam/xf-sql": "^0.1.0"
   },
   "dependencies": {
     "pg": "^8.11.0"
