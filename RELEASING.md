@@ -6,8 +6,9 @@ publishing are driven by [Changesets](https://github.com/changesets/changesets) 
 GitHub Actions workflow ([`.github/workflows/release.yml`](./.github/workflows/release.yml)).
 
 The model is **"the community proposes, the maintainer releases."** Anyone may open a
-pull request that includes a changeset; only the maintainer (@isramatrix) merges to
-`main` and merges the automated *Version Packages* PR that actually cuts a release.
+pull request that includes a changeset; only the maintainer (@isramatrix) can merge it to
+`main`. **Merging the PR is the release** — the workflow versions and publishes to npm in
+the same run. No version reaches npm without the maintainer merging.
 
 ---
 
@@ -16,7 +17,7 @@ pull request that includes a changeset; only the maintainer (@isramatrix) merges
 | Role | May do |
 |---|---|
 | **Contributor** (anyone) | Open PRs, include a changeset describing the bump. |
-| **Maintainer** (@isramatrix) | Review + merge PRs to `main`; review + merge the *Version Packages* PR (this is the act of releasing). |
+| **Maintainer** (@isramatrix) | Review + merge PRs to `main`. The merge triggers the automatic version-bump + publish — so **merging is releasing**. |
 
 `main` is protected: no direct pushes, PRs require maintainer review (enforced by
 [CODEOWNERS](./.github/CODEOWNERS)). Therefore no version reaches npm without the
@@ -29,17 +30,19 @@ maintainer explicitly merging it.
 Trunk-based. `main` is always releasable.
 
 ```
-main ─────●──────────────●───────────────●─────────────▶
-           \            / \             /
-            ●──●──●────┘   ●──●────────┘
-            feature PR      "Version Packages" PR (bot)
-            (+ changeset)   (maintainer merges → publish)
+main ──●───────────────●───────────────────●────────────▶
+        \             / \                 /
+         ●──●──●─────┘   ●──●────────────┘
+         feature PR       feature PR (+ changeset)
+         (+ changeset)    → merge auto-versions & publishes to npm
 ```
 
 - **Feature / fix branches** — `feat/…`, `fix/…`, `docs/…`. One logical change per PR.
-- **No release branches.** Releases are cut from `main` by merging the bot's PR.
-- **Tags** are created automatically by the release action, one per published package
-  and version (e.g. `@xfcfam/xf-rest@0.2.0`).
+- **No release branches, no *Version Packages* PR.** Merging a PR that carries a changeset
+  publishes immediately; the workflow commits the version bump back to `main` as
+  `chore(release): version packages [skip ci]`.
+- **Tags** are created automatically, one per published package and version
+  (e.g. `@xfcfam/xf-rest@0.2.0`).
 
 ---
 
@@ -72,29 +75,21 @@ changes no published code does not need one.
 ### 2 · Maintainer: review + merge the PR to `main`
 
 CI ([`ci.yml`](./.github/workflows/ci.yml)) must be green — typecheck + tests + build on
-Node 20 and 22. The maintainer reviews and merges. **Merging here does NOT publish.**
+Node 20 and 22. The maintainer reviews and merges. **Merging is the release.**
 
-### 3 · The bot opens / updates the *Version Packages* PR
+### 3 · The workflow versions + publishes (automatic)
 
-On every push to `main`, `release.yml` runs `changesets/action`. While unreleased
-changesets exist, it opens (or refreshes) a PR titled **`chore: version packages`** that:
+On the push to `main`, `release.yml` sees the pending changeset and, in one run:
 
-- bumps each affected `package.json` version,
-- moves changeset summaries into each package's `CHANGELOG.md`,
-- bumps internal `@xfcfam/*` dependents (`updateInternalDependencies: patch`),
-- deletes the consumed `.changeset/*.md` files.
+- runs `changeset version` — bumps each affected `package.json`, moves changeset
+  summaries into each `CHANGELOG.md`, bumps internal `@xfcfam/*` dependents
+  (`updateInternalDependencies: patch`), and deletes the consumed `.changeset/*.md`;
+- commits that bump back to `main` as `chore(release): version packages [skip ci]`
+  (the `[skip ci]` stops it re-triggering the workflow);
+- builds, then runs `changeset publish` — publishes every package whose version is ahead
+  of npm under the `@xfcfam` scope, and creates a git tag per published package.
 
-This PR accumulates every pending changeset. **Leave it open** until you want to release.
-
-### 4 · Maintainer: merge the *Version Packages* PR → publish
-
-When you merge it, `main` has no pending changesets, so `release.yml` instead runs
-`pnpm release` (= `pnpm build && changeset publish`), which:
-
-- publishes every package whose version is ahead of npm, to the `@xfcfam` scope,
-- creates a GitHub Release + git tag per published package.
-
-**Merging this PR is the release.** Only the maintainer does it.
+A PR with **no** changeset (docs/CI-only) merges normally and publishes nothing.
 
 ---
 
@@ -114,18 +109,36 @@ When you merge it, `main` has no pending changesets, so `release.yml` instead ru
 These are **account actions for the maintainer** — CI cannot do them:
 
 1. **Create the npm org** `xfcfam` (npmjs.com → *Add organization*, free for public packages).
-2. **Create an npm automation token** (npm → *Access Tokens* → *Generate* → **Automation**).
-   Automation tokens bypass 2FA, which is required for CI publishing.
-3. **Add it as a GitHub secret**: repo → *Settings → Secrets and variables → Actions →
-   New repository secret* → name **`NPM_TOKEN`**, value = the token.
-4. **Protect `main`**: *Settings → Branches → Add rule* → require PR + require review +
-   require status checks (`CI`) to pass.
-5. (Optional) enable **npm provenance**: add `NPM_CONFIG_PROVENANCE: true` to the publish
-   step's `env` for signed, traceable releases (works because the job already requests
-   `id-token: write`).
+2. **Bootstrap the packages.** Trusted publishing is configured per *existing* package, so the
+   very first publish (which creates each package on npm) is done with a token or `npm login`:
 
-To cut **`1.0.0`** from the current `0.1.0`: open a PR adding a `major` changeset for the
-packages you want to release, merge it, then merge the resulting *Version Packages* PR.
+   ```bash
+   npm login
+   pnpm -r --filter './packages/*' build
+   pnpm --filter './packages/*' publish --access public   # creates @xfcfam/* @ 0.1.0
+   ```
+
+3. **Switch to trusted publishing (OIDC) — no token after this.** On npmjs.com, for *each*
+   package: *Settings → Trusted Publisher → GitHub Actions* → Organization `xfcfam`,
+   Repository `lib-npm`, Workflow `release.yml`, **Environment** `release`. Then *Settings →
+   Publishing access → **Require two-factor authentication and disallow tokens*** and revoke the
+   bootstrap token. (Needs npm ≥ 11.5.1 / Node ≥ 22.14 — the workflow upgrades npm for you.
+   Provenance is generated automatically for public repo + public package.)
+4. **Create a push token** so the workflow can commit the version bump to protected `main`:
+   a fine-grained PAT scoped to this repo with **Contents: Read and write** (or a GitHub App
+   token). Add it as secret **`RELEASE_TOKEN`**. (Git only — npm uses OIDC.)
+5. **Create the `release` environment** (*Settings → Environments → New environment* → `release`):
+   set **Deployment branches → Selected branches → `main`**, and add **no required reviewers**.
+   This pins publishing to `main` at the npm/OIDC layer too, without adding an approval gate —
+   it stays full-auto.
+6. **Protect `main`** so every change goes through a PR, but with **no approval requirement**
+   (as the sole maintainer you can't approve your own PR, so an approval gate would block you):
+   require a pull request with **0 required approvals**, block force pushes and deletions, and
+   leave **"Include administrators" off** so your `RELEASE_TOKEN` (admin) can land the version
+   commit. You open + merge your own PRs unblocked; contributors at fork-level access can't merge.
+
+After bootstrap, every release is fully automatic and tokenless on npm. To cut **`1.0.0`**
+from `0.1.0`: open a PR with a `major` changeset and merge it — the workflow publishes on merge.
 
 ---
 
@@ -148,7 +161,7 @@ git push --follow-tags
 | I want to… | Do |
 |---|---|
 | Propose a change | PR + `pnpm changeset` |
-| See what will be released | Read the open *Version Packages* PR |
-| Release now | Merge the *Version Packages* PR |
-| Hold a release | Leave that PR open; keep merging features into it |
+| Release | Merge the PR — versioning + publish are automatic |
+| See what a PR will release | Read its `.changeset/*.md` (packages + bump type) |
+| Hold a release | Don't merge yet (or merge a PR with no changeset) |
 | Release one package only | Only that package needs a changeset |

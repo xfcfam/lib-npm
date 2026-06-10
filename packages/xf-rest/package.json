@@ -30,7 +30,7 @@
     "test:watch": "vitest"
   },
   "peerDependencies": {
-    "@xfcfam/xf": "^0.1.0"
+    "@xfcfam/xf": "workspace:^0.1.0"
   },
   "dependencies": {
     "ky": "^1.7.0"

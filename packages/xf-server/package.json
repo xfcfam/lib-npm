@@ -30,7 +30,7 @@
     "test:watch": "vitest"
   },
   "peerDependencies": {
-    "@xfcfam/xf": "^0.1.0"
+    "@xfcfam/xf": "workspace:^0.1.0"
   },
   "dependencies": {
     "fastify": "^5.0.0",
