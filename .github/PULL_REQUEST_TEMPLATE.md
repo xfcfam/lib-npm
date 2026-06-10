@@ -23,8 +23,8 @@ that don't apply.
 
 <!-- Tick all that apply -->
 
-- [ ] `@xfarch/xf`
-- [ ] `@xfarch/xf-rest`
+- [ ] `@xfcfam/xf`
+- [ ] `@xfcfam/xf-rest`
 - [ ] `examples/*`
 - [ ] Repository tooling (root configs, CI, docs)
 

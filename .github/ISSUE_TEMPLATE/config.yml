@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Question or discussion
-    url: https://github.com/xfarch/lib-typescript/discussions
+    url: https://github.com/xfcfam/lib-npm/discussions
     about: For questions about how to use XF, design discussions, or anything that is not a concrete bug or feature request.
   - name: XF Architecture Model — full specification
-    url: https://xfarch.org
+    url: https://xfcfam.org
     about: The canonical specification of the model. Read this before opening an issue about the model itself rather than the implementation.

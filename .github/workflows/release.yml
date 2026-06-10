@@ -8,7 +8,7 @@ name: release
 #
 # Requires:
 #   - NPM_TOKEN repository secret (npm automation token with publish scope
-#     for the @xfarch organisation).
+#     for the @xfcfam organisation).
 #   - GITHUB_TOKEN with `contents: write` (granted via `permissions` below).
 
 on:

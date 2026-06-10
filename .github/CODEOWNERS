@@ -1,4 +1,4 @@
-# CODEOWNERS — automatic PR reviewers for xfarch/lib-npm.
+# CODEOWNERS — automatic PR reviewers for xfcfam/lib-npm.
 #
 # Format: <path-glob>  <owner>...
 # Owners are auto-requested for review on every PR touching the path.

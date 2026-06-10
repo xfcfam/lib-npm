@@ -1,0 +1,27 @@
+{
+  "name": "@xfcfam-examples/02-sql-postgres",
+  "version": "0.0.1",
+  "private": true,
+  "description": "XF artefact: PostgresDatabaseRepository → Business → Service, end-to-end against a local Postgres.",
+  "type": "module",
+  "scripts": {
+    "prestart": "pnpm --filter @xfcfam/xf --filter @xfcfam/xf-sql --filter @xfcfam/xf-sql-postgres build",
+    "start": "tsx src/main.ts",
+    "typecheck": "tsc --noEmit",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down -v",
+    "db:reset": "docker compose down -v && docker compose up -d && sleep 2 && pnpm db:schema",
+    "db:schema": "docker compose exec -T postgres psql -U xf -d xfdemo < schema.sql"
+  },
+  "dependencies": {
+    "@xfcfam/xf": "workspace:^0.1.0",
+    "@xfcfam/xf-sql": "workspace:^0.1.0",
+    "@xfcfam/xf-sql-postgres": "workspace:^0.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "tsx": "^4.0.0",
+    "@types/node": "^20.0.0",
+    "@types/pg": "^8.11.0"
+  }
+}

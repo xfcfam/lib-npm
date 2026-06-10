@@ -1,0 +1,22 @@
+{
+  "name": "@xfcfam-examples/01-rest-basic",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Minimal XF artefact: REST Repository → Business → Service, end-to-end, against jsonplaceholder.typicode.com.",
+  "type": "module",
+  "scripts": {
+    "prestart": "pnpm --filter @xfcfam/xf --filter @xfcfam/xf-rest build",
+    "start": "tsx src/main.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@xfcfam/xf": "workspace:^0.1.0",
+    "@xfcfam/xf-rest": "workspace:^0.1.0",
+    "ky": "^1.7.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "tsx": "^4.0.0",
+    "@types/node": "^20.0.0"
+  }
+}

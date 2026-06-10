@@ -8,7 +8,7 @@ assignees: []
 
 ## Affected package and version
 
-- Package: <!-- @xfarch/xf or @xfarch/xf-rest -->
+- Package: <!-- @xfcfam/xf or @xfcfam/xf-rest -->
 - Version: <!-- e.g. 0.1.0 -->
 - Node version: <!-- e.g. 20.11.0 -->
 - TypeScript version: <!-- e.g. 5.4.5 -->

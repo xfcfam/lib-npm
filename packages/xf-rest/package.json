@@ -1,0 +1,41 @@
+{
+  "name": "@xfcfam/xf-rest",
+  "version": "0.1.0",
+  "description": "REST Access Layer Generalization for the XF Architecture Model — encapsulates the ky HTTP client.",
+  "author": "XF Contributors",
+  "license": "MIT",
+  "homepage": "https://xfcfam.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xfcfam/lib-npm",
+    "directory": "packages/xf-rest"
+  },
+  "keywords": ["xf", "cfam", "rest", "http", "ky"],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "@xfcfam/xf": "workspace:^0.1.0"
+  },
+  "dependencies": {
+    "ky": "^1.7.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0"
+  }
+}

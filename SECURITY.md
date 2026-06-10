@@ -3,12 +3,12 @@
 ## Supported versions
 
 This repository is a pnpm monorepo that publishes the following npm
-packages under the `@xfarch` scope:
+packages under the `@xfcfam` scope:
 
-- `@xfarch/xf` (core)
-- `@xfarch/xf-rest`
-- `@xfarch/xf-sql`
-- `@xfarch/xf-sql-postgres`
+- `@xfcfam/xf` (core)
+- `@xfcfam/xf-rest`
+- `@xfcfam/xf-sql`
+- `@xfcfam/xf-sql-postgres`
 
 Only the **latest major** of each package receives security fixes.
 Older majors may receive a fix at the maintainers' discretion when the
@@ -16,10 +16,10 @@ underlying issue is severe.
 
 | Package                  | Supported version |
 | ------------------------ | ----------------- |
-| `@xfarch/xf`             | latest major      |
-| `@xfarch/xf-rest`        | latest major      |
-| `@xfarch/xf-sql`         | latest major      |
-| `@xfarch/xf-sql-postgres`| latest major      |
+| `@xfcfam/xf`             | latest major      |
+| `@xfcfam/xf-rest`        | latest major      |
+| `@xfcfam/xf-sql`         | latest major      |
+| `@xfcfam/xf-sql-postgres`| latest major      |
 
 ## Reporting a vulnerability
 
@@ -31,7 +31,7 @@ Use one of:
 
 1. **GitHub private vulnerability reporting** (preferred) — repository
    **Security** tab → **"Report a vulnerability"**.
-2. **Email** — `security@xfarch.org` (PGP key on request).
+2. **Email** — `security@xfcfam.org` (PGP key on request).
 
 Please include:
 
@@ -52,7 +52,7 @@ We aim to:
 
 In scope:
 
-- Anything published from `packages/*` to npm under `@xfarch/*`.
+- Anything published from `packages/*` to npm under `@xfcfam/*`.
 - Build, release, and publish workflows under `.github/workflows/`
   (where a compromise could yield malicious package versions).
 - The `changesets` configuration and any release scripts.

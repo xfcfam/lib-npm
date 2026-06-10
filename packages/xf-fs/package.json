@@ -1,0 +1,39 @@
+{
+  "name": "@xfcfam/xf-fs",
+  "version": "0.1.0",
+  "description": "Filesystem Access Layer Generalization for the XF Architecture Model — encapsulates local-disk file operations (node:fs).",
+  "author": "XF Contributors",
+  "license": "MIT",
+  "homepage": "https://xfcfam.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xfcfam/lib-npm",
+    "directory": "packages/xf-fs"
+  },
+  "keywords": ["xf", "cfam", "filesystem", "fs", "files", "io"],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "@xfcfam/xf": "workspace:^0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0"
+  }
+}

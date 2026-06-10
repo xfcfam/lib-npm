@@ -8,7 +8,7 @@ components. Every component in an XF-compliant artefact belongs to
 exactly one **layer** (Access · Business · Interaction) and exactly
 one **type** (Logical · Generalization · Injection · Utility ·
 Transfer) — fifteen possible cells in a 3 × 5 matrix. The full
-specification lives at [xfarch.org](https://xfarch.org).
+specification lives at [xfcfam.org](https://xfcfam.org).
 
 This repository is a [pnpm](https://pnpm.io) workspace. Each package
 is published independently to npm; they evolve together in the same
@@ -16,10 +16,17 @@ repo so cross-package changes stay atomic.
 
 ## Packages
 
-| Package | What it provides | Install |
-|---|---|---|
-| [`@xfarch/xf`](./packages/xf) | Core library. Abstract Generalizations of the three layers (`Repository<T>`, `Business<T>`, `View<T>` and their `Stateless`/`Observable`/`Schedule`/`Composable`/`Cacheable`/`Retryable`/`Paginated`/`Validated`/`StateMachine`/`EventSourced` variants), the Injection contracts (`R`/`B`/`A`), and the lifecycle orchestrator (`XF`). | `pnpm add @xfarch/xf` |
-| [`@xfarch/xf-rest`](./packages/xf-rest) | REST Access Layer Generalization. Encapsulates the `ky` HTTP client behind `RestRepository` + the ready-to-use `RetryRestRepository`. Plus `ParseUtils` / `ReviverUtils` for XML, CSV, custom content types, and date revival. | `pnpm add @xfarch/xf @xfarch/xf-rest` |
+Every package depends on the core `@xfcfam/xf`; install it alongside any
+adapter.
+
+| Package | Layer · role | What it provides | Install |
+|---|---|---|---|
+| [`@xfcfam/xf`](./packages/xf) | Core | Abstract Generalizations of the three layers (`Repository<T>`, `Business<T>`, `View<T>` and their `Stateless`/`Observable`/`Schedule`/`Composable`/`Cacheable`/`Retryable`/`Paginated`/`Validated`/`StateMachine`/`EventSourced` variants), the Injection contracts (`R`/`B`/`A`), and the lifecycle orchestrator (`XF`). | `pnpm add @xfcfam/xf` |
+| [`@xfcfam/xf-rest`](./packages/xf-rest) | Access | REST Access Generalization. Encapsulates the `ky` HTTP client behind `RestRepository` + the ready-to-use `RetryRestRepository`, plus `ParseUtils` / `ReviverUtils` for XML, CSV, custom content types, and date revival. | `pnpm add @xfcfam/xf @xfcfam/xf-rest` |
+| [`@xfcfam/xf-fs`](./packages/xf-fs) | Access | Filesystem Access Generalization over `node:fs` — `FileRepository` and its `Cached`/`Audited` variants for local-disk operations. | `pnpm add @xfcfam/xf @xfcfam/xf-fs` |
+| [`@xfcfam/xf-sql`](./packages/xf-sql) | Access | SQL Access Generalization over the Kysely query builder. Dialect-agnostic; `DatabaseRepository` + `TransactionalDatabaseRepository`. Pair with a dialect adapter. | `pnpm add @xfcfam/xf @xfcfam/xf-sql` |
+| [`@xfcfam/xf-sql-postgres`](./packages/xf-sql-postgres) | Access | PostgreSQL dialect adapter for `@xfcfam/xf-sql` — wraps Kysely's `PostgresDialect` + the `pg` driver and maps Postgres `SQLSTATE` codes to the typed Exceptions of `xf-sql`. | `pnpm add @xfcfam/xf @xfcfam/xf-sql @xfcfam/xf-sql-postgres` |
+| [`@xfcfam/xf-server`](./packages/xf-server) | Interaction | HTTP-server Interaction Generalization over Fastify — the canonical `RestService` / `ObjectRestService` / `RestServerService` bases for exposing an artefact over HTTP. | `pnpm add @xfcfam/xf @xfcfam/xf-server` |
 
 ## Quick start
 
@@ -27,8 +34,8 @@ The smallest XF artefact has the three layers wired through the
 canonical Injections:
 
 ```typescript
-import { StatelessBusiness, StatelessView } from '@xfarch/xf'
-import { RetryRestRepository } from '@xfarch/xf-rest'
+import { StatelessBusiness, StatelessView } from '@xfcfam/xf'
+import { RetryRestRepository } from '@xfcfam/xf-rest'
 
 class UsersRest extends RetryRestRepository {
   constructor() { super('https://api.example.com') }
@@ -43,7 +50,7 @@ complete artefact with `R`/`B`/`A` Injections and a `main.ts` that
 bootstraps the artefact end-to-end. Run it with:
 
 ```bash
-pnpm --filter @xfarch-examples/01-rest-basic start
+pnpm --filter @xfcfam-examples/01-rest-basic start
 ```
 
 ## Development
@@ -58,20 +65,26 @@ pnpm build              # produces dist/ for every package
 Each package can be addressed individually:
 
 ```bash
-pnpm --filter @xfarch/xf      test
-pnpm --filter @xfarch/xf-rest test
-pnpm --filter @xfarch/xf      build
+pnpm --filter @xfcfam/xf      test
+pnpm --filter @xfcfam/xf-rest test
+pnpm --filter @xfcfam/xf      build
 ```
 
 ## Repository layout
 
 ```
-lib-typescript/
+lib-npm/
 ├── packages/
-│   ├── xf/              ← @xfarch/xf       — core library
-│   └── xf-rest/         ← @xfarch/xf-rest  — REST Access Generalization
+│   ├── xf/                 ← @xfcfam/xf              — core library
+│   ├── xf-rest/            ← @xfcfam/xf-rest         — REST Access Generalization
+│   ├── xf-fs/              ← @xfcfam/xf-fs           — filesystem Access Generalization
+│   ├── xf-sql/             ← @xfcfam/xf-sql          — SQL Access Generalization (Kysely)
+│   ├── xf-sql-postgres/    ← @xfcfam/xf-sql-postgres — Postgres dialect adapter
+│   └── xf-server/          ← @xfcfam/xf-server       — HTTP-server Interaction Generalization
 └── examples/
-    └── 01-rest-basic/   — runnable XF artefact consuming both packages
+    ├── 01-rest-basic/      — REST client artefact (xf + xf-rest)
+    ├── 02-sql-postgres/    — Postgres artefact (xf + xf-sql + xf-sql-postgres)
+    └── 03-rest-server/     — HTTP server artefact (xf + xf-server)
 ```
 
 The internal layout of every published package follows the canonical

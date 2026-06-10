@@ -1,0 +1,42 @@
+{
+  "name": "@xfcfam/xf-sql",
+  "version": "0.1.0",
+  "description": "SQL Access Layer Generalization for the XF Architecture Model — encapsulates the Kysely query builder. Dialect-agnostic; pair with @xfcfam/xf-sql-postgres / @xfcfam/xf-sql-mysql / etc.",
+  "author": "XF Contributors",
+  "license": "MIT",
+  "homepage": "https://xfcfam.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xfcfam/lib-npm",
+    "directory": "packages/xf-sql"
+  },
+  "keywords": ["xf", "cfam", "sql", "kysely", "database"],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "kysely": "^0.27.0"
+  },
+  "peerDependencies": {
+    "@xfcfam/xf": "workspace:^0.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0",
+    "kysely": "^0.27.0"
+  }
+}

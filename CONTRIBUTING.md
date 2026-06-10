@@ -1,4 +1,4 @@
-# Contributing to `xfarch/lib-typescript`
+# Contributing to `xfcfam/lib-npm`
 
 Thanks for considering a contribution! This repository is the
 TypeScript reference implementation of the **XF Architecture Model**
@@ -8,8 +8,8 @@ feature breadth.
 ## Quick start
 
 ```bash
-git clone git@github.com:xfarch/lib-typescript.git
-cd lib-typescript
+git clone git@github.com:xfcfam/lib-npm.git
+cd lib-npm
 pnpm install
 pnpm test          # vitest across every package
 pnpm typecheck     # tsc --noEmit across every package
@@ -155,5 +155,5 @@ technical direction is healthy; personal attacks are not.
 
 ## Questions
 
-Open a [Discussion](https://github.com/xfarch/lib-typescript/discussions)
-on GitHub or reach out via [xfarch.org](https://xfarch.org).
+Open a [Discussion](https://github.com/xfcfam/lib-npm/discussions)
+on GitHub or reach out via [xfcfam.org](https://xfcfam.org).

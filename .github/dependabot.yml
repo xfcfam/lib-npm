@@ -1,4 +1,4 @@
-# Dependabot configuration for the xfarch/lib-npm monorepo.
+# Dependabot configuration for the xfcfam/lib-npm monorepo.
 #
 # We scan three things:
 #   1. The workspace root (devDependencies: changesets, tsc, etc.).

@@ -29,8 +29,8 @@ assignees: []
 
 <!-- Where does the proposed addition sit on the L × T matrix?
 
-     - Is it a new Generalization in /repository/base/, /business/base/
-       or /api/base/?
+     - Is it a new Generalization in /repository/general/, /business/general/
+       or /api/general/?
      - Is it a Utility (XUtils class)?
      - Is it a Transfer object?
      - Does it require a change to the model itself?
