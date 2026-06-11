@@ -86,7 +86,7 @@ export interface ObjectRestOptions {
  *
  * @example
  * ```ts
- * import { ObjectRestService, SchemaValidator, HttpStatus } from '@xfcfam/xf-server'
+ * import { ObjectRestService, SchemaValidatorUtils, HttpStatusUtils } from '@xfcfam/xf-server'
  * import { z } from 'zod'
  *
  * const UserCreate = z.object({ name: z.string(), email: z.string().email() })
@@ -99,13 +99,13 @@ export interface ObjectRestOptions {
  *
  *   private async getUser(req): Promise<HttpResponse> {
  *     const user = await B.userBusiness.findById(req.params.id)
- *     return { status: HttpStatus.OK, body: user }
+ *     return { status: HttpStatusUtils.OK, body: user }
  *   }
  *
  *   private async createUser(req): Promise<HttpResponse> {
- *     const dto = SchemaValidator.parse(UserCreate, req.body)
+ *     const dto = SchemaValidatorUtils.parse(UserCreate, req.body)
  *     const user = await B.userBusiness.create(dto)
- *     return { status: HttpStatus.CREATED, body: user }
+ *     return { status: HttpStatusUtils.CREATED, body: user }
  *   }
  * }
  * ```
@@ -169,7 +169,7 @@ export abstract class ObjectRestService extends RestService {
       const parsed = parser(bytes, contentType)
       return { ...request, body: parsed }
     } catch (err) {
-      throw new BadRequestException(`Invalid ${contentType} body`, { cause: (err as Error).message })
+      throw new BadRequestException(`Invalid ${contentType} body`, { detail: (err as Error).message })
     }
   }
 

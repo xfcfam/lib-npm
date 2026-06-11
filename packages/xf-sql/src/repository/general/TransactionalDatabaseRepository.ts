@@ -75,7 +75,11 @@ export abstract class TransactionalDatabaseRepository<Schema = unknown>
       this.onTransactionCommit(txId, Date.now() - startedAt)
       return result
     } catch (err) {
-      this.onTransactionRollback(txId, err)
+      try {
+        await this.onTransactionRollback(txId, err)
+      } catch {
+        // A throwing rollback hook must not mask the original error.
+      }
       throw this.translateError(err)
     }
   }
@@ -101,8 +105,13 @@ export abstract class TransactionalDatabaseRepository<Schema = unknown>
    * completes. `reason` is the original error (before
    * {@link DatabaseRepository.translateError} is applied to the
    * rethrow). Default no-op.
+   *
+   * The hook may be `async` — it is `await`ed before the original
+   * error is rethrown. If the hook itself throws, the exception is
+   * swallowed so the original transaction error is always the one
+   * propagated to the caller.
    */
-  protected onTransactionRollback(_txId: string, _reason: unknown): void {}
+  protected onTransactionRollback(_txId: string, _reason: unknown): void | Promise<void> {}
 
   // ─── Internals ────────────────────────────────────────────
 

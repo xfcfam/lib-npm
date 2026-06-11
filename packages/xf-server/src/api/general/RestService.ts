@@ -28,7 +28,7 @@ import { InternalServerException } from '../transfers/InternalServerException.js
  *
  * @example
  * ```ts
- * import { RestService, HttpStatus, NotFoundException } from '@xfcfam/xf-server'
+ * import { RestService, HttpStatusUtils, NotFoundException } from '@xfcfam/xf-server'
  * import { B } from '../../business/B.js'
  *
  * export class UsersRestService extends RestService {
@@ -40,13 +40,13 @@ import { InternalServerException } from '../transfers/InternalServerException.js
  *   private async getUser(req): Promise<HttpResponse> {
  *     const user = await B.userBusiness.findById(req.params.id)
  *     if (user === null) throw new NotFoundException(`User ${req.params.id}`)
- *     return { status: HttpStatus.OK, body: user }
+ *     return { status: HttpStatusUtils.OK, body: user }
  *   }
  *
  *   // Streaming upload: req.body is a ReadableStream<Uint8Array>.
  *   private async uploadAvatar(req): Promise<HttpResponse> {
  *     await B.userBusiness.storeAvatar(req.params.id, req.body)
- *     return { status: HttpStatus.NO_CONTENT }
+ *     return { status: HttpStatusUtils.NO_CONTENT }
  *   }
  * }
  * ```

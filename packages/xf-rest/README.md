@@ -20,7 +20,7 @@ ESM-only, requires Node ≥ 20 (or modern browsers). TypeScript ≥ 5.4.
 | Export | Role |
 |---|---|
 | `RestRepository` | Access Layer Generalization. Constructor `(baseUrl, options?)`. Methods: `get` / `post` / `put` / `del` / `call`. |
-| `RetryRestRepository` | Ready-to-use composition of `RestRepository` + `RetryableRepository`. Comes with a sensible default `shouldRetry` (retry 5xx + 429 + `ConnectionException`; do **not** retry other 4xx). |
+| `RetryRestRepository` | Ready-to-use `RestRepository` with built-in retry semantics (reimplements the canonical `RetryableRepository` policy). Comes with a sensible default `shouldRetry` (retry 5xx + 429 + `ConnectionException`; do **not** retry other 4xx). |
 | `RestException` | Transfer object thrown on HTTP non-2xx. Carries `status`, `statusText`, parsed `body`, and the originating `request`. |
 | `ConnectionException` | Transfer object thrown on transport-level failures. Carries `cause`, `request`, and `reason: 'timeout' \| 'network'`. |
 | `Request` | Transfer object that describes a single call. Input of `call()`, exposed to `interceptor` / `onRequest`. |

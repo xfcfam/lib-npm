@@ -38,7 +38,7 @@ the underlying HTTP engine.
 ## Quick start (object REST)
 
 ```typescript
-import { ObjectRestService, HttpStatus, NotFoundException, SchemaValidator } from '@xfcfam/xf-server'
+import { ObjectRestService, HttpStatusUtils, NotFoundException, SchemaValidatorUtils } from '@xfcfam/xf-server'
 import { z } from 'zod'
 
 const UserCreate = z.object({ name: z.string(), email: z.string().email() })
@@ -52,18 +52,18 @@ export class UsersRestService extends ObjectRestService {
   private async getUser(req): Promise<HttpResponse> {
     const user = await B.userBusiness.findById(req.params.id)
     if (user === null) throw new NotFoundException(`User ${req.params.id}`)
-    return { status: HttpStatus.OK, body: user }
+    return { status: HttpStatusUtils.OK, body: user }
   }
 
   private async createUser(req): Promise<HttpResponse> {
-    const dto = SchemaValidator.parse(UserCreate, req.body)
+    const dto = SchemaValidatorUtils.parse(UserCreate, req.body)
     const user = await B.userBusiness.create(dto)
-    return { status: HttpStatus.CREATED, body: user }
+    return { status: HttpStatusUtils.CREATED, body: user }
   }
 }
 ```
 
-`SchemaValidator` is **duck-typed on `.safeParse(value)`** — works with
+`SchemaValidatorUtils` is **duck-typed on `.safeParse(value)`** — works with
 zod, valibot, arktype-with-adapter, anything that exposes that shape.
 xf-server does **not** depend on zod at runtime.
 
@@ -145,20 +145,20 @@ Both directions are first-class.
 **Streaming response** (downloads, large exports, SSE):
 
 ```typescript
-import { FileResponse } from '@xfcfam/xf-server'
+import { FileResponseUtils } from '@xfcfam/xf-server'
 
 async download(req): Promise<HttpResponse> {
   const stream = await B.docs.openStream(req.params.id)   // ReadableStream<Uint8Array>
-  return FileResponse.attachment(stream, 'report.pdf', 'application/pdf')
+  return FileResponseUtils.attachment(stream, 'report.pdf', 'application/pdf')
 }
 
 async previewImage(req): Promise<HttpResponse> {
   const stream = await B.photos.openStream(req.params.id)
-  return FileResponse.inline(stream, 'photo.jpg', 'image/jpeg')
+  return FileResponseUtils.inline(stream, 'photo.jpg', 'image/jpeg')
 }
 
 async serverSentEvents(): Promise<HttpResponse> {
-  return FileResponse.stream(eventStream, 'text/event-stream')
+  return FileResponseUtils.stream(eventStream, 'text/event-stream')
 }
 ```
 
@@ -202,7 +202,7 @@ internal multipart handling lazily (only paid for if you opt in).
 Handlers see `req.body` as `MultipartPart[]`:
 
 ```typescript
-import { ObjectRestService, MultipartPart, HttpStatus } from '@xfcfam/xf-server'
+import { ObjectRestService, MultipartPart, HttpStatusUtils } from '@xfcfam/xf-server'
 
 export class UploadsRestService extends ObjectRestService {
   override async init(): Promise<void> {
@@ -216,7 +216,7 @@ export class UploadsRestService extends ObjectRestService {
         await B.fileBusiness.save(part.filename, part.body, part.mimeType)
       }
     }
-    return { status: HttpStatus.CREATED, body: { uploaded: parts.length } }
+    return { status: HttpStatusUtils.CREATED, body: { uploaded: parts.length } }
   }
 }
 ```

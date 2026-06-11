@@ -50,7 +50,8 @@ export interface RestServerOptions {
 
 interface ServerState {
   readonly options: RestServerOptions
-  fastify?: FastifyInstance
+  /** The running Fastify instance; `undefined` before `init()` and after `terminate()`. */
+  fastify: FastifyInstance | undefined
 }
 
 /**
@@ -151,8 +152,8 @@ export abstract class RestServerService extends View<ServerState> {
       }
     }
 
-    await this.onStarted()
     await instance.listen({ port: this.state.options.port, host: this.state.options.host ?? '0.0.0.0' })
+    await this.onStarted()
   }
 
   override async terminate(): Promise<void> {
@@ -171,7 +172,7 @@ export abstract class RestServerService extends View<ServerState> {
   async onResponse<T>(_request: HttpRequest, response: HttpResponse<T>): Promise<HttpResponse<T>> { return response }
   /** Invoked when no service `onError` handled the error. Return an `HttpResponse` to translate. */
   async onError(_request: HttpRequest, _error: unknown): Promise<HttpResponse | undefined> { return undefined }
-  /** Invoked after Fastify is configured, before `listen()`. */
+  /** Invoked after the server is listening (after `listen()` resolves). */
   async onStarted(): Promise<void> {}
   /** Invoked after Fastify has been closed. */
   async onStopped(): Promise<void> {}
@@ -395,11 +396,17 @@ export abstract class RestServerService extends View<ServerState> {
   static discover(injection: object): RestService[] {
     const out: RestService[] = []
     const seen = new WeakSet<object>()
-    const visit = (target: object): void => {
-      if (seen.has(target)) return
-      seen.add(target)
-      for (const key of Object.getOwnPropertyNames(target)) {
-        const desc = Object.getOwnPropertyDescriptor(target, key)
+    const visitedKeys = new Set<string>()
+    // Walk the prototype chain so services declared on a parent
+    // injection class are also discovered.
+    let t: object | null = injection
+    while (t !== null && t !== Function.prototype) {
+      if (seen.has(t)) break
+      seen.add(t)
+      for (const key of Object.getOwnPropertyNames(t)) {
+        if (visitedKeys.has(key)) continue
+        visitedKeys.add(key)
+        const desc = Object.getOwnPropertyDescriptor(t, key)
         // Skip getters with side effects: only data descriptors.
         if (desc === undefined || 'get' in desc) continue
         const value = desc.value
@@ -407,8 +414,8 @@ export abstract class RestServerService extends View<ServerState> {
           out.push(value)
         }
       }
+      t = Object.getPrototypeOf(t) as object | null
     }
-    visit(injection)
     return out
   }
 }
