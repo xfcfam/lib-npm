@@ -4,9 +4,13 @@ import { RetryRestRepository, RestException, ConnectionException, type Request }
 // We mock ky at the module level so RestRepository's ky.create returns a
 // controllable function. Each test can program the response sequence.
 vi.mock('ky', () => {
+  // ky v2: HTTPError keeps `response` (for status/headers) and adds a
+  // pre-parsed `data` property (the consumed body). Tests pass `data`
+  // explicitly since the mock can't async-parse the Response body.
   const HTTPError = class extends Error {
     response: Response
-    constructor(r: Response) { super('http'); this.response = r }
+    data: unknown
+    constructor(r: Response, data?: unknown) { super('http'); this.response = r; this.data = data }
   }
   const TimeoutError = class extends Error {}
   // The current mock instance — re-assigned per test via __set
@@ -87,7 +91,7 @@ describe('RetryRestRepository — actual retry behavior', () => {
         throw new HTTPError(new Response('{}', {
           status: 500, statusText: 'Internal',
           headers: { 'content-type': 'application/json' },
-        }))
+        }), {})
       }
       return new Response(JSON.stringify({ id: 'u1' }), {
         status: 200, headers: { 'content-type': 'application/json' },
@@ -109,12 +113,60 @@ describe('RetryRestRepository — actual retry behavior', () => {
       throw new HTTPError(new Response('{"err":"not found"}', {
         status: 404, statusText: 'Not Found',
         headers: { 'content-type': 'application/json' },
-      }))
+      }), { err: 'not found' })
     })
     const repo = new UsersRest()
     await repo.init()
     await expect(repo.getUser('missing')).rejects.toBeInstanceOf(RestException)
     expect(attempt).toBe(1)
+    await repo.terminate()
+  })
+})
+
+describe('RestRepository — HTTPError body reads from ky v2 `data`', () => {
+  it('populates RestException.body from err.data', async () => {
+    const { HTTPError, __setMock } = kyMod as any
+    __setMock(async () => {
+      throw new HTTPError(
+        new Response('{"error":"invalid"}', {
+          status: 422, statusText: 'Unprocessable Entity',
+          headers: { 'content-type': 'application/json' },
+        }),
+        { error: 'invalid' },
+      )
+    })
+    const repo = new UsersRest()
+    await repo.init()
+    try {
+      await repo.getUser('x')
+      throw new Error('should have thrown a RestException')
+    } catch (e) {
+      expect(e).toBeInstanceOf(RestException)
+      const ex = e as RestException
+      expect(ex.status).toBe(422)
+      expect(ex.statusText).toBe('Unprocessable Entity')
+      expect(ex.body).toEqual({ error: 'invalid' })
+    }
+    await repo.terminate()
+  })
+
+  it('leaves body undefined when err.data is undefined (empty error body)', async () => {
+    const { HTTPError, __setMock } = kyMod as any
+    __setMock(async () => {
+      throw new HTTPError(
+        new Response(null, { status: 400, statusText: 'Bad Request' }),
+        undefined,
+      )
+    })
+    const repo = new UsersRest()
+    await repo.init()
+    try {
+      await repo.getUser('x')
+      throw new Error('should have thrown a RestException')
+    } catch (e) {
+      expect((e as RestException).status).toBe(400)
+      expect((e as RestException).body).toBeUndefined()
+    }
     await repo.terminate()
   })
 })

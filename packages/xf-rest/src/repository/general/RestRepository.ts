@@ -116,7 +116,11 @@ export abstract class RestRepository extends Repository<null> {
    */
   async init(): Promise<void> {
     if (this.client !== undefined) return
-    const opts: KyOptions = { prefixUrl: this.baseUrl }
+    // ky v2 renamed `prefixUrl` → `prefix`. `prefix` keeps v1's
+    // slash-join semantics (the full base path is preserved, unlike
+    // `baseUrl`, which uses web-standard relative resolution and would
+    // drop a non-trailing-slash path segment).
+    const opts: KyOptions = { prefix: this.baseUrl }
     if (this.options.defaultHeaders !== undefined) opts.headers = this.options.defaultHeaders
     if (this.options.timeout !== undefined) opts.timeout = this.options.timeout
     this.client = ky.create(opts)
@@ -197,10 +201,15 @@ export abstract class RestRepository extends Repository<null> {
 
   private async translateError(err: unknown, req: Request): Promise<RestException | ConnectionException> {
     if (err instanceof HTTPError) {
-      let body: unknown
-      try {
-        body = await this.parseResponseBody(err.response.clone())
-      } catch { /* ignore body parse failure — body remains undefined */ }
+      // ky v2 auto-consumes the response body to populate `err.data`
+      // (JSON parsed by Content-Type, other content types as text,
+      // `undefined` when empty or unparsable). The body methods on
+      // `err.response` no longer work, so read `err.data` directly;
+      // `err.response` remains valid for status / statusText / headers.
+      let body: unknown = err.data
+      if (body !== undefined && this.options.reviver !== undefined) {
+        body = ReviverUtils.walkReviver(body, this.options.reviver)
+      }
       return new RestException(err.response.status, err.response.statusText, body, req)
     }
     if (err instanceof TimeoutError) {
