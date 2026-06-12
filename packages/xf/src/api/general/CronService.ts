@@ -1,4 +1,4 @@
-import { StatelessView } from './StatelessView.js'
+import { StatelessService } from './StatelessService.js'
 
 /**
  * Generalization for Interaction Layer components that act as a cron
@@ -30,7 +30,7 @@ import { StatelessView } from './StatelessView.js'
  * }
  * ```
  */
-export abstract class CronService extends StatelessView {
+export abstract class CronService extends StatelessService {
   /**
    * Cron expression describing when this handler should fire.
    * Standard 5- or 6-field format (`min hour dom month dow [year]`).

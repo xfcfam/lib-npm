@@ -11,7 +11,7 @@
  * adapter packages (`@xfcfam/xf-sql-postgres`,
  * `@xfcfam/xf-sql-mysql`, …) or supply any Kysely `Dialect` directly.
  *
- * Peer dependencies: `@xfcfam/xf`, `kysely`.
+ * Peer dependency: `@xfcfam/xf`. `kysely` is a direct (bundled) dependency.
  */
 
 // ── Access — base ─────────────────────────────────────────

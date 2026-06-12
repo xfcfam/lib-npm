@@ -1,4 +1,4 @@
-import { UsersDbRepository } from './logic/local/UsersDbRepository'
+import { UsersDbRepository } from './logic/local/UsersDbRepository.js'
 
 /**
  * Access Layer Injection — canonical XF singleton.

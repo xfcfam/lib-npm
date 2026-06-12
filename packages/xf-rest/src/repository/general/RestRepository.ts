@@ -106,7 +106,16 @@ export abstract class RestRepository extends Repository<null> {
     this.options = options
   }
 
+  /**
+   * Create the internal `ky` HTTP client. Idempotent: if the client
+   * has already been created by a previous `init()` call, this method
+   * returns immediately without recreating it.
+   *
+   * Subclasses that override `init()` MUST call `await super.init()`
+   * first.
+   */
   async init(): Promise<void> {
+    if (this.client !== undefined) return
     const opts: KyOptions = { prefixUrl: this.baseUrl }
     if (this.options.defaultHeaders !== undefined) opts.headers = this.options.defaultHeaders
     if (this.options.timeout !== undefined) opts.timeout = this.options.timeout

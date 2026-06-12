@@ -90,7 +90,9 @@ export abstract class AuditedFileRepository extends FileRepository {
       await this.onRead(this.resolve(path), Buffer.byteLength(content, 'utf-8'))
       return content
     } catch (err) {
-      await this.onError('read', this.resolve(path), err)
+      try {
+        await this.onError('read', this.resolve(path), err)
+      } catch { /* a throwing hook must not mask the original error */ }
       throw err
     }
   }
@@ -101,7 +103,9 @@ export abstract class AuditedFileRepository extends FileRepository {
       await this.onReadBytes(this.resolve(path), bytes.byteLength)
       return bytes
     } catch (err) {
-      await this.onError('readBytes', this.resolve(path), err)
+      try {
+        await this.onError('readBytes', this.resolve(path), err)
+      } catch { /* a throwing hook must not mask the original error */ }
       throw err
     }
   }
@@ -111,7 +115,9 @@ export abstract class AuditedFileRepository extends FileRepository {
       await super.write(path, content)
       await this.onWrite(this.resolve(path), AuditedFileRepository.sizeOf(content))
     } catch (err) {
-      await this.onError('write', this.resolve(path), err)
+      try {
+        await this.onError('write', this.resolve(path), err)
+      } catch { /* a throwing hook must not mask the original error */ }
       throw err
     }
   }
@@ -121,7 +127,9 @@ export abstract class AuditedFileRepository extends FileRepository {
       await super.append(path, content)
       await this.onAppend(this.resolve(path), AuditedFileRepository.sizeOf(content))
     } catch (err) {
-      await this.onError('append', this.resolve(path), err)
+      try {
+        await this.onError('append', this.resolve(path), err)
+      } catch { /* a throwing hook must not mask the original error */ }
       throw err
     }
   }
@@ -131,7 +139,9 @@ export abstract class AuditedFileRepository extends FileRepository {
       await super.delete(path)
       await this.onDelete(this.resolve(path))
     } catch (err) {
-      await this.onError('delete', this.resolve(path), err)
+      try {
+        await this.onError('delete', this.resolve(path), err)
+      } catch { /* a throwing hook must not mask the original error */ }
       throw err
     }
   }
@@ -148,7 +158,9 @@ export abstract class AuditedFileRepository extends FileRepository {
       await this.onStat(s.path, s)
       return s
     } catch (err) {
-      await this.onError('stat', this.resolve(path), err)
+      try {
+        await this.onError('stat', this.resolve(path), err)
+      } catch { /* a throwing hook must not mask the original error */ }
       throw err
     }
   }
@@ -159,7 +171,9 @@ export abstract class AuditedFileRepository extends FileRepository {
       await this.onList(this.resolve(path), entries)
       return entries
     } catch (err) {
-      await this.onError('list', this.resolve(path), err)
+      try {
+        await this.onError('list', this.resolve(path), err)
+      } catch { /* a throwing hook must not mask the original error */ }
       throw err
     }
   }
@@ -170,7 +184,9 @@ export abstract class AuditedFileRepository extends FileRepository {
       await this.onWalk(this.resolve(path), entries)
       return entries
     } catch (err) {
-      await this.onError('walk', this.resolve(path), err)
+      try {
+        await this.onError('walk', this.resolve(path), err)
+      } catch { /* a throwing hook must not mask the original error */ }
       throw err
     }
   }
@@ -180,7 +196,9 @@ export abstract class AuditedFileRepository extends FileRepository {
       await super.mkdir(path, options)
       await this.onMkdir(this.resolve(path), options.recursive ?? false)
     } catch (err) {
-      await this.onError('mkdir', this.resolve(path), err)
+      try {
+        await this.onError('mkdir', this.resolve(path), err)
+      } catch { /* a throwing hook must not mask the original error */ }
       throw err
     }
   }
@@ -190,7 +208,9 @@ export abstract class AuditedFileRepository extends FileRepository {
       await super.rmdir(path, options)
       await this.onRmdir(this.resolve(path), options.recursive ?? false)
     } catch (err) {
-      await this.onError('rmdir', this.resolve(path), err)
+      try {
+        await this.onError('rmdir', this.resolve(path), err)
+      } catch { /* a throwing hook must not mask the original error */ }
       throw err
     }
   }
@@ -213,7 +233,9 @@ export abstract class AuditedFileRepository extends FileRepository {
       await this.onWatch(this.resolve(path), watcher)
       return watcher
     } catch (err) {
-      await this.onError('watch', this.resolve(path), err)
+      try {
+        await this.onError('watch', this.resolve(path), err)
+      } catch { /* a throwing hook must not mask the original error */ }
       throw err
     }
   }
@@ -224,7 +246,9 @@ export abstract class AuditedFileRepository extends FileRepository {
       await this.onTempFile(handle)
       return handle
     } catch (err) {
-      await this.onError('tempFile', '', err)
+      try {
+        await this.onError('tempFile', '', err)
+      } catch { /* a throwing hook must not mask the original error */ }
       throw err
     }
   }

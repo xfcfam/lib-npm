@@ -1,4 +1,5 @@
 import { Business } from './Business.js'
+import { NotInitializedException } from '../../repository/transfers/NotInitializedException.js'
 
 /**
  * Generalization for Business Layer components whose state is derived
@@ -13,6 +14,7 @@ import { Business } from './Business.js'
  */
 export abstract class EventSourcedBusiness<T, E> extends Business<T> {
   private log: E[] = []
+  private initialized = false
 
   /**
    * Pure reducer: given the current state and an event, returns the
@@ -28,8 +30,12 @@ export abstract class EventSourcedBusiness<T, E> extends Business<T> {
    * Append `event` to the log and advance `state` through {@link apply}.
    *
    * @param event  The event to record.
+   * @throws {NotInitializedException}  If called before {@link init}.
    */
   record(event: E): void {
+    if (!this.initialized) {
+      throw new NotInitializedException('EventSourcedBusiness: init() was not called before record().')
+    }
     this.state = this.apply(this.state, event)
     this.log.push(event)
   }
@@ -60,11 +66,14 @@ export abstract class EventSourcedBusiness<T, E> extends Business<T> {
   }
 
   /**
-   * No-op. Override to add setup.
+   * Marks the component ready. Override to add setup, calling
+   * `super.init()` so {@link record} becomes usable.
    *
    * @returns A resolved promise.
    */
-  async init(): Promise<void> {}
+  async init(): Promise<void> {
+    this.initialized = true
+  }
 
   /**
    * Clears the log.

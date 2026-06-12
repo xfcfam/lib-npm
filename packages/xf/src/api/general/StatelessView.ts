@@ -1,11 +1,12 @@
 import { View } from './View.js'
 
 /**
- * Generalization for stateless Interaction Layer components.
+ * Generalization for stateless GUI / presentation Interaction Layer
+ * components — the stateless counterpart of {@link View}.
  *
- * Use this for services, handlers, or commands that translate an
- * external request into Business calls and return a response, without
- * holding state of their own.
+ * Use this for views that hold no state of their own. For stateless
+ * *systemic* components (services, handlers, commands) use
+ * {@link StatelessService} instead.
  *
  * Equivalent to `View<null>` with a zero-argument constructor.
  *
@@ -13,10 +14,9 @@ import { View } from './View.js'
  * ```ts
  * import { StatelessView } from '@xfcfam/xf'
  *
- * export class HealthService extends StatelessView {
+ * export class SplashView extends StatelessView {
  *   async init()      {}
  *   async terminate() {}
- *   check() { return { status: 'ok' } }
  * }
  * ```
  */

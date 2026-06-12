@@ -319,13 +319,34 @@ export abstract class FileRepository extends Repository<FileRepoState> {
 
   /**
    * Watch a file or directory for changes. `callback` is invoked
-   * synchronously by the OS for each event. Recursive watches are
-   * supported only on macOS and Windows; on Linux, recursive emulation
-   * is not built in (callers can stack multiple watchers).
+   * synchronously by the OS for each event.
+   *
+   * **Platform restriction**: recursive directory watching is supported
+   * only on macOS and Windows (via `node:fs`'s native `recursive`
+   * option). On Linux, `node:fs` silently ignores the `recursive` flag
+   * and emits no sub-directory events, which would be a silent footgun.
+   * Therefore this method throws an `Error` when watching a **directory**
+   * on Linux. Watching a single **file** works on every platform and is
+   * always allowed.
+   *
+   * @throws {Error} When watching a directory on Linux (where `node:fs`
+   *   recursive watching is not supported).
+   * @throws {FileNotFoundException} If `path` does not exist.
    */
   async watch(path: string, callback: (event: WatchEvent) => void): Promise<Watcher> {
     const abs = this.resolve(path)
     if (!(await this.exists(abs))) throw new FileNotFoundException(abs)
+    // Recursive directory watching degrades silently on Linux (node:fs
+    // ignores the `recursive` flag and emits no sub-directory events), so
+    // fail loud there for DIRECTORY watches. Watching a single file works
+    // identically on every platform and is allowed.
+    if (process.platform === 'linux' && (await fsp.stat(abs)).isDirectory()) {
+      throw new Error(
+        'FileRepository.watch(): recursive directory watching is not supported on Linux ' +
+        '(node:fs silently ignores the recursive option). Watch individual files, or use a ' +
+        'platform-specific inotify solution for directory trees.'
+      )
+    }
     const watcher = new WatcherImpl(abs, callback, this.state.openWatchers)
     this.state.openWatchers.add(watcher)
     return watcher

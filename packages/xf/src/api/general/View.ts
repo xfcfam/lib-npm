@@ -1,9 +1,8 @@
 /**
  * Base Generalization for the Interaction Layer (7.3).
  *
- * `View<T>` is the canonical XF Generalization that every concrete
- * Logical component of the Interaction Layer extends — whether a GUI
- * view, a service endpoint, an event handler, or a CLI command. It
+ * `View<T>` is the canonical XF Generalization for GUI / presentation
+ * Logical components of the Interaction Layer (the `View` suffix). It
  * carries the local presentation/orchestration state and declares the
  * mandatory lifecycle hooks (`init` / `terminate`) that the injection
  * `A` orchestrates.
@@ -12,10 +11,11 @@
  * component orchestrates Business operations on behalf of an external
  * caller; it MUST NOT access the Access Layer directly.
  *
- * Despite the name, `View` is the generic Interaction generalization —
- * suitable for both GUI views and non-graphical services. The canonical
- * suffixes for concrete components are `View` (GUI) and `Service`
- * (non-GUI), both of which extend this class.
+ * The Interaction Layer has two canonical suffixes: `View` (GUI /
+ * presentation) extends this class, while non-graphical, systemic
+ * components (`Service`) extend its sibling {@link Service} (or
+ * {@link StatelessService}) — structurally identical, semantically
+ * distinct.
  *
  * @typeParam T  Shape of the component's internal state. Use `null` (and
  *               extend {@link StatelessView}) when the component carries

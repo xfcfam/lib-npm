@@ -1,6 +1,6 @@
 import { StatelessView } from '@xfcfam/xf'
-import { B } from '../../../business/B'
-import type { User } from '../../../repository/transfers/User'
+import { B } from '../../../business/B.js'
+import type { User } from '../../../repository/transfers/User.js'
 
 /**
  * Interaction Layer Logical — the user-facing service.

@@ -1,7 +1,7 @@
 import { PostgresDatabaseRepository } from '@xfcfam/xf-sql-postgres'
 import { UniqueViolationException } from '@xfcfam/xf-sql'
-import type { DatabaseSchema } from '../../transfers/DatabaseSchema'
-import type { User } from '../../transfers/User'
+import type { DatabaseSchema } from '../../transfers/DatabaseSchema.js'
+import type { User } from '../../transfers/User.js'
 
 /**
  * Access Layer Logical for the `users` table.

@@ -21,12 +21,14 @@ adapter.
 
 | Package | Layer · role | What it provides | Install |
 |---|---|---|---|
-| [`@xfcfam/xf`](./packages/xf) | Core | Abstract Generalizations of the three layers (`Repository<T>`, `Business<T>`, `View<T>` and their `Stateless`/`Observable`/`Schedule`/`Composable`/`Cacheable`/`Retryable`/`Paginated`/`Validated`/`StateMachine`/`EventSourced` variants), the Injection contracts (`R`/`B`/`A`), and the lifecycle orchestrator (`XF`). | `pnpm add @xfcfam/xf` |
+| [`@xfcfam/xf`](./packages/xf) | Core | Abstract Generalizations of the three layers (`Repository<T>`, `Business<T>`, `View<T>` and their `Stateless`/`Observable`/`Schedule`/`Cacheable`/`Retryable`/`Paginated`/`Validated`/`StateMachine`/`EventSourced` variants), the Injection contracts (`R`/`B`/`A`), and the lifecycle orchestrator (`XF`). | `pnpm add @xfcfam/xf` |
 | [`@xfcfam/xf-rest`](./packages/xf-rest) | Access | REST Access Generalization. Encapsulates the `ky` HTTP client behind `RestRepository` + the ready-to-use `RetryRestRepository`, plus `ParseUtils` / `ReviverUtils` for XML, CSV, custom content types, and date revival. | `pnpm add @xfcfam/xf @xfcfam/xf-rest` |
 | [`@xfcfam/xf-fs`](./packages/xf-fs) | Access | Filesystem Access Generalization over `node:fs` — `FileRepository` and its `Cached`/`Audited` variants for local-disk operations. | `pnpm add @xfcfam/xf @xfcfam/xf-fs` |
 | [`@xfcfam/xf-sql`](./packages/xf-sql) | Access | SQL Access Generalization over the Kysely query builder. Dialect-agnostic; `DatabaseRepository` + `TransactionalDatabaseRepository`. Pair with a dialect adapter. | `pnpm add @xfcfam/xf @xfcfam/xf-sql` |
 | [`@xfcfam/xf-sql-postgres`](./packages/xf-sql-postgres) | Access | PostgreSQL dialect adapter for `@xfcfam/xf-sql` — wraps Kysely's `PostgresDialect` + the `pg` driver and maps Postgres `SQLSTATE` codes to the typed Exceptions of `xf-sql`. | `pnpm add @xfcfam/xf @xfcfam/xf-sql @xfcfam/xf-sql-postgres` |
-| [`@xfcfam/xf-server`](./packages/xf-server) | Interaction | HTTP-server Interaction Generalization over Fastify — the canonical `RestService` / `ObjectRestService` / `RestServerService` bases for exposing an artefact over HTTP. | `pnpm add @xfcfam/xf @xfcfam/xf-server` |
+| [`@xfcfam/xf-server`](./packages/xf-server) | Interaction + Business | Transport-agnostic **inbound-server contract**: the abstract `ServerBusiness` / `EntryService` bases (registry + lifecycle + request pipeline) shared by every `xf-server-*` transport. No transport of its own. | `pnpm add @xfcfam/xf @xfcfam/xf-server` |
+| [`@xfcfam/xf-server-http`](./packages/xf-server-http) | Interaction + Business | HTTP transport over Fastify — **REST · WebSocket · SSE · GraphQL** on one port. `HttpServerBusiness` + `RestService` / `ObjectRestService` / `WebSocketService` / `GraphQLService`. | `pnpm add @xfcfam/xf @xfcfam/xf-server @xfcfam/xf-server-http` |
+| [`@xfcfam/xf-server-grpc`](./packages/xf-server-grpc) · [`-tcp`](./packages/xf-server-tcp) · [`-udp`](./packages/xf-server-udp) | Interaction + Business | **Sketches** — typed skeletons of other transports (gRPC, raw TCP, UDP) that compile against the `xf-server` contract, demonstrating its reach. Not production-ready. | — |
 
 ## Quick start
 
@@ -80,11 +82,15 @@ lib-npm/
 │   ├── xf-fs/              ← @xfcfam/xf-fs           — filesystem Access Generalization
 │   ├── xf-sql/             ← @xfcfam/xf-sql          — SQL Access Generalization (Kysely)
 │   ├── xf-sql-postgres/    ← @xfcfam/xf-sql-postgres — Postgres dialect adapter
-│   └── xf-server/          ← @xfcfam/xf-server       — HTTP-server Interaction Generalization
+│   ├── xf-server/          ← @xfcfam/xf-server       — inbound-server contract (abstract)
+│   ├── xf-server-http/     ← @xfcfam/xf-server-http  — HTTP transport (REST/WS/SSE/GraphQL)
+│   ├── xf-server-grpc/     ← @xfcfam/xf-server-grpc  — gRPC transport (sketch)
+│   ├── xf-server-tcp/      ← @xfcfam/xf-server-tcp   — raw TCP transport (sketch)
+│   └── xf-server-udp/      ← @xfcfam/xf-server-udp   — UDP transport (sketch)
 └── examples/
     ├── 01-rest-basic/      — REST client artefact (xf + xf-rest)
     ├── 02-sql-postgres/    — Postgres artefact (xf + xf-sql + xf-sql-postgres)
-    └── 03-rest-server/     — HTTP server artefact (xf + xf-server)
+    └── 03-rest-server/     — HTTP server artefact (xf + xf-server-http: REST/WS/SSE/GraphQL)
 ```
 
 The internal layout of every published package follows the canonical

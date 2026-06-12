@@ -1,4 +1,4 @@
-import { UsersRestRepository } from './logic/remote/UsersRestRepository'
+import { UsersRestRepository } from './logic/remote/UsersRestRepository.js'
 
 /**
  * Access Layer Injection — canonical XF singleton.

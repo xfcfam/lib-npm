@@ -198,7 +198,7 @@ export abstract class DatabaseRepository<Schema = unknown> extends Repository<nu
     try {
       return await op()
     } catch (err) {
-      this.onError('exec', err)
+      await this.onError('exec', err)
       throw this.translateError(err)
     }
   }
@@ -237,6 +237,14 @@ export abstract class DatabaseRepository<Schema = unknown> extends Repository<nu
    *
    * The hook fires before {@link translateError}; the (possibly
    * untranslated) error is still re-thrown to the caller.
+   *
+   * The hook may be `async` — the `exec()` call site `await`s it, so
+   * an async override is fully observed before the error is rethrown.
+   * Note: the Kysely log callback (`'query'` source) is synchronous by
+   * Kysely's API contract and cannot `await` the hook; async overrides
+   * that target only that source will execute fire-and-forget from that
+   * path. If reliable async observability of query-level Kysely errors
+   * is required, wrap the hook body with its own error handling.
    */
-  protected onError(_operation: string, _error: unknown): void {}
+  protected onError(_operation: string, _error: unknown): void | Promise<void> {}
 }

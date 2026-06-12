@@ -13,7 +13,7 @@ packages:
 
 Or supply any Kysely `Dialect` directly to `DatabaseRepository`.
 
-Peer dependencies: `@xfcfam/xf`, `kysely`.
+Peer dependency: `@xfcfam/xf`. `kysely` is a direct (bundled) dependency.
 
 ## Install
 

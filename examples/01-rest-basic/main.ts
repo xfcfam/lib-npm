@@ -1,6 +1,6 @@
-import { R } from './src/repository/R'
-import { B } from './src/business/B'
-import { A } from './src/api/A'
+import { R } from './src/repository/R.js'
+import { B } from './src/business/B.js'
+import { A } from './src/api/A.js'
 
 /**
  * Bootstrap of the example artefact.

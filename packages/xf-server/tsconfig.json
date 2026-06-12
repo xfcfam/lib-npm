@@ -14,7 +14,7 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": []
   },
   "include": ["index.ts", "src/**/*"],
   "exclude": ["node_modules", "dist"]

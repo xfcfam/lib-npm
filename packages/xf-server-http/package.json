@@ -1,0 +1,62 @@
+{
+  "name": "@xfcfam/xf-server-http",
+  "version": "0.1.0",
+  "description": "HTTP transport for the XF Architecture Model — REST / WebSocket / SSE / GraphQL over Fastify. Implements the @xfcfam/xf-server contract with canonical HttpServerBusiness / RestService / ObjectRestService bases.",
+  "author": "XF Contributors",
+  "license": "MIT",
+  "homepage": "https://xfcfam.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xfcfam/lib-npm",
+    "directory": "packages/xf-server-http"
+  },
+  "keywords": [
+    "xf",
+    "cfam",
+    "server",
+    "http",
+    "rest",
+    "websocket",
+    "sse",
+    "graphql",
+    "fastify"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "@xfcfam/xf": "workspace:^",
+    "@xfcfam/xf-server": "workspace:^"
+  },
+  "dependencies": {
+    "fastify": "^5.0.0",
+    "@fastify/multipart": "^9.0.0",
+    "@fastify/websocket": "^11.0.0",
+    "mercurius": "^16.0.0",
+    "graphql": "^16.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0"
+  }
+}

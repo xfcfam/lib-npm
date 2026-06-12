@@ -1,6 +1,5 @@
 import {
   ObjectRestService,
-  RestService,
   HttpStatusUtils,
   FileResponseUtils,
   NotFoundException,
@@ -8,7 +7,7 @@ import {
   type HttpRequest,
   type HttpResponse,
   type MultipartPart,
-} from '@xfcfam/xf-server'
+} from '@xfcfam/xf-server-http'
 import { B } from '../../../business/B.js'
 
 /**
@@ -21,25 +20,23 @@ import { B } from '../../../business/B.js'
  *   - Server-Sent Events via FileResponseUtils.stream + ReadableStream.
  *   - Streaming bodies in both directions — when the response body
  *     is a stream, the server pipes it without buffering.
- *
- * Uses `ObjectRestService` for the JSON list endpoint while
- * benefiting from automatic multipart handling on `/files` and from
- * pass-through behaviour for stream/binary responses (the parent
- * class only serialises object responses).
+ *   - Push route registration: routes are pushed to `B.server` from
+ *     `init()`. Object endpoints use `this.object(handler)`; binary /
+ *     stream endpoints use `this.wrap(handler)`.
  */
 export class FilesRestService extends ObjectRestService {
   override async init(): Promise<void> {
-    this.handle('GET',  '/files',                 this.list)
-    this.handle('POST', '/files',                 this.upload)
-    this.handle('GET',  '/files/:id/download',    this.download)
-    this.handle('GET',  '/files/:id/preview',     this.preview)
-    this.handle('GET',  '/files/events',          this.events)
+    B.server.get('/files',              this.object(this.list))
+    B.server.post('/files',             this.object(this.upload))
+    B.server.get('/files/:id/download', this.wrap(this.download))
+    B.server.get('/files/:id/preview',  this.wrap(this.preview))
+    B.server.get('/files/events',       this.wrap(this.events))
   }
 
   // ── list (object response) ────────────────────────────────
 
   private async list(_req: HttpRequest): Promise<HttpResponse> {
-    const files = await B.filesBusiness.list()
+    const files = await B.file.list()
     // Strip `bytes` from the listing — we just expose metadata.
     const summaries = files.map(({ id, filename, mimeType, uploadedAt }) => ({
       id, filename, mimeType, uploadedAt,
@@ -60,7 +57,7 @@ export class FilesRestService extends ObjectRestService {
       const bytes = part.body instanceof Uint8Array
         ? part.body
         : await FilesRestService.collectStream(part.body)
-      const file = await B.filesBusiness.save(part.filename, part.mimeType, bytes)
+      const file = await B.file.save(part.filename, part.mimeType, bytes)
       stored.push({ id: file.id, filename: file.filename, size: file.bytes.byteLength })
     }
     if (stored.length === 0) {
@@ -72,16 +69,16 @@ export class FilesRestService extends ObjectRestService {
   // ── download (file response — attachment) ────────────────
 
   private async download(req: HttpRequest): Promise<HttpResponse> {
-    const file = await B.filesBusiness.findById(req.params.id!)
-    if (file === null) throw new NotFoundException(`File ${req.params.id}`)
+    const file = await B.file.findById(req.params['id']!)
+    if (file === null) throw new NotFoundException(`File ${req.params['id']}`)
     return FileResponseUtils.attachment(file.bytes, file.filename, file.mimeType)
   }
 
   // ── preview (file response — inline) ─────────────────────
 
   private async preview(req: HttpRequest): Promise<HttpResponse> {
-    const file = await B.filesBusiness.findById(req.params.id!)
-    if (file === null) throw new NotFoundException(`File ${req.params.id}`)
+    const file = await B.file.findById(req.params['id']!)
+    if (file === null) throw new NotFoundException(`File ${req.params['id']}`)
     // Stream the bytes via a ReadableStream so the response demonstrates
     // streaming pass-through (rather than buffered Uint8Array).
     const stream = FilesRestService.bytesToStream(file.bytes)
@@ -93,7 +90,7 @@ export class FilesRestService extends ObjectRestService {
   private async events(_req: HttpRequest): Promise<HttpResponse> {
     // Emits 5 events over 5 seconds. Demonstrates that a streaming
     // body coexists with object endpoints in the same Service.
-    const stream = B.filesBusiness.eventStream(5, 1000)
+    const stream = B.file.eventStream(5, 1000)
     return FileResponseUtils.stream(stream, 'text/event-stream')
   }
 
@@ -120,7 +117,3 @@ export class FilesRestService extends ObjectRestService {
     })
   }
 }
-
-// Silence unused warning — RestService is documented as the alternative
-// base for full-raw services. Imported for the README cross-reference.
-type _RestServiceRef = RestService

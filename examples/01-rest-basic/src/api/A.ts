@@ -1,4 +1,4 @@
-import { UserService } from './logic/service/UserService'
+import { UserService } from './logic/service/UserService.js'
 
 /**
  * Interaction Layer Injection — canonical XF singleton.

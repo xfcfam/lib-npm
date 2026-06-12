@@ -3,9 +3,8 @@
 Core library of the **XF Architecture Model** (CFAM) for TypeScript.
 
 Ships the abstract Generalizations of the three XF layers (Access,
-Business, Interaction), the Injection contracts (`R` / `B` / `A`), the
-`ComposableX` static utilities for multi-Generalization combination,
-and the optional lifecycle orchestrator (`XF`).
+Business, Interaction), the Injection contracts (`R` / `B` / `A`), and
+the optional lifecycle orchestrator (`XF`).
 
 The model itself is technology-agnostic; this package is the
 TypeScript reference implementation. Full specification at
@@ -114,54 +113,6 @@ class SessionBusiness extends ObservableBusiness<SessionState> {
   logout()              { this.state = {};        this.notify() }
 }
 ```
-
-## Quick usage — multi-Generalization
-
-When a Logical needs the behaviour of several Generalizations at once
-(e.g. observable state + scheduled tick + finite-state machine), use
-`ComposableBusiness.compose`:
-
-```typescript
-import {
-  ComposableBusiness,
-  ObservableBusiness,
-  ScheduleBusiness,
-  StateMachineBusiness,
-  type TransitionTable,
-} from '@xfcfam/xf'
-
-type Status = 'idle' | 'running' | 'done'
-type Action = 'start' | 'finish'
-interface JobState { status: Status; progress: number }
-
-class JobBusiness extends ComposableBusiness.compose(
-  ObservableBusiness<JobState>,
-  ScheduleBusiness<JobState>,
-  StateMachineBusiness<JobState, Status, Action>,
-) {
-  constructor() { super({ status: 'idle', progress: 0 }) }
-
-  async init()      { await super.init(); this.interval(1_000) }
-  async terminate() { await super.terminate() }
-
-  async run() { this.state.progress++; this.notify() }
-
-  protected readonly transitions: TransitionTable<Status, Action> = {
-    idle:    { start:  'running' },
-    running: { finish: 'done'    },
-    done:    {},
-  }
-  protected getFsmState() { return this.state.status }
-  protected setFsmState(s: Status) { this.state = { ...this.state, status: s } }
-}
-```
-
-The composed class inherits the constructor signature and prototype
-chain of the **first** ctor passed; the rest contribute methods and
-init/terminate steps. See the JSDoc of `ComposableBusiness` for the
-full contract — in particular, the requirement to call
-`await super.init()` / `await super.terminate()` first / last in any
-override.
 
 ## Lifecycle
 

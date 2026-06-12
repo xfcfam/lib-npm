@@ -1,6 +1,6 @@
 {
   "name": "@xfcfam/xf",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Core XF Architecture Model library — base Generalizations and Injections for TypeScript",
   "author": "XF Contributors",
   "license": "MIT",
@@ -10,7 +10,12 @@
     "url": "https://github.com/xfcfam/lib-npm",
     "directory": "packages/xf"
   },
-  "keywords": ["xf", "cfam", "architecture", "cross-framework"],
+  "keywords": [
+    "xf",
+    "cfam",
+    "architecture",
+    "cross-framework"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -20,8 +25,12 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist"],
-  "publishConfig": { "access": "public" },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
