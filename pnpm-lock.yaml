@@ -27,8 +27,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/xf-rest
       ky:
-        specifier: ^1.7.0
-        version: 1.14.3
+        specifier: ^2.0.2
+        version: 2.0.2
     devDependencies:
       '@types/node':
         specifier: ^20.0.0
@@ -118,8 +118,8 @@ importers:
         specifier: workspace:^
         version: link:../xf
       ky:
-        specifier: ^1.7.0
-        version: 1.14.3
+        specifier: ^2.0.2
+        version: 2.0.2
     devDependencies:
       typescript:
         specifier: ^5.4.0
@@ -1241,9 +1241,9 @@ packages:
   jsonfile@4.0.0:
     resolution: {integrity: sha512-m6F1R3z8jjlf2imQHS2Qez5sjKWQzbuuhuJ/FKYFRZvPE3PuHcSMVZzfsLhGVOkfd20obL5SWEBew5ShlquNxg==}
 
-  ky@1.14.3:
-    resolution: {integrity: sha512-9zy9lkjac+TR1c2tG+mkNSVlyOpInnWdSMiue4F+kq8TwJSgv6o8jhLRg8Ho6SnZ9wOYUq/yozts9qQCfk7bIw==}
-    engines: {node: '>=18'}
+  ky@2.0.2:
+    resolution: {integrity: sha512-/GmXpo9F9W+f8n4Ivr2iH+7h7wL7jLbLKWkMlpflcCRb6kGjBfTlASEXaZ9qUgNTn4VgS0P2pwxxzQ4EM6Ulgg==}
+    engines: {node: '>=22'}
 
   kysely@0.27.6:
     resolution: {integrity: sha512-FIyV/64EkKhJmjgC0g2hygpBv5RNWVPyNCqSAD7eTCv6eFWNIi4PN1UvdSJGicN/o35bnevgis4Y0UDC0qi8jQ==}
@@ -2709,7 +2709,7 @@ snapshots:
     optionalDependencies:
       graceful-fs: 4.2.11
 
-  ky@1.14.3: {}
+  ky@2.0.2: {}
 
   kysely@0.27.6: {}
 
