@@ -49,8 +49,8 @@
     "pg": "^8.11.0"
   },
   "devDependencies": {
-    "typescript": "^5.4.0",
-    "vitest": "^3.2.6",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8",
     "kysely": "^0.28.17",
     "@types/pg": "^8.11.0"
   }

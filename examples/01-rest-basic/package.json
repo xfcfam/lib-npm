@@ -12,11 +12,11 @@
   "dependencies": {
     "@xfcfam/xf": "workspace:^",
     "@xfcfam/xf-rest": "workspace:^",
-    "ky": "^1.7.0"
+    "ky": "^2.0.2"
   },
   "devDependencies": {
-    "typescript": "^5.4.0",
+    "typescript": "^6.0.3",
     "tsx": "^4.0.0",
-    "@types/node": "^20.0.0"
+    "@types/node": "^25.9.3"
   }
 }
