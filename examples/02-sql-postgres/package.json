@@ -20,9 +20,9 @@
   },
   "devDependencies": {
     "typescript": "^5.4.0",
-    "tsx": "^4.0.0",
+    "tsx": "^4.22.4",
     "@types/node": "^20.0.0",
     "@types/pg": "^8.11.0",
-    "kysely": "^0.27.0"
+    "kysely": "^0.29.2"
   }
 }
