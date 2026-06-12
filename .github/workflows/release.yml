@@ -54,6 +54,14 @@ jobs:
           node-version: '22.x'
           cache: 'pnpm'
 
+      # Pre-publish conformance guard: refuse to release if any package is
+      # below Λ = 3 (not well-formed) per CFAM § 11.4. Runs before install and
+      # before the Changesets action, so a non-conformant tree aborts the run
+      # instead of versioning or publishing to npm. Defence-in-depth alongside
+      # the required CI check — release.yml fires on push to `main`, after merge.
+      - name: XF conformance gate (Λ ≥ 3)
+        run: pnpm conformance
+
       - name: Install
         run: pnpm install --frozen-lockfile
 

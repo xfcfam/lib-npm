@@ -48,3 +48,30 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+  # Architecture gate: every package must be well-formed (conformance level
+  # Λ ≥ 3) per CFAM § 11.4, checked with the published @xfcfam/tools validator.
+  # Make this a required status check in branch protection so a PR that drops
+  # any package below Λ = 3 cannot be merged into `main`.
+  conformance:
+    name: Conformance (Λ ≥ 3)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22.x'
+          cache: 'pnpm'
+
+      # No `pnpm install` needed: the gate pulls @xfcfam/tools on demand via
+      # `pnpm dlx`, and the validator reads each package's source tree directly.
+      - name: XF conformance gate (Λ ≥ 3)
+        run: pnpm conformance

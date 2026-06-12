@@ -7,6 +7,7 @@
     "clean": "pnpm -r --filter './packages/*' clean",
     "test": "pnpm -r --filter './packages/*' test",
     "test:watch": "pnpm -r --filter './packages/*' test:watch",
+    "conformance": "fail=0; for p in packages/*/; do [ -d \"${p}src\" ] || continue; echo \"==> validate ${p}\"; pnpm dlx @xfcfam/tools@${XFTOOLS_VERSION:-latest} validate \"$p\" || fail=1; done; [ \"$fail\" -eq 0 ] || { echo \"XF conformance gate failed: a package is below Λ=3 (not well-formed)\" >&2; exit 1; }; echo \"XF conformance gate passed: all packages well-formed (Λ≥3)\"",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "pnpm build && changeset publish"
