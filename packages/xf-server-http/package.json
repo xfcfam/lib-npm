@@ -1,6 +1,6 @@
 {
   "name": "@xfcfam/xf-server-http",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "HTTP transport for the XF Architecture Model — REST / WebSocket / SSE / GraphQL over Fastify. Implements the @xfcfam/xf-server contract with canonical HttpServerBusiness / RestService / ObjectRestService bases.",
   "author": "XF Contributors",
   "license": "MIT",
