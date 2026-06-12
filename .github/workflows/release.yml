@@ -69,7 +69,7 @@ jobs:
 
       - name: Set up pnpm
         if: steps.cs.outputs.pending == 'true'
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           run_install: false
 
