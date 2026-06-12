@@ -1,0 +1,52 @@
+{
+  "name": "@xfcfam/xf-server-tcp",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Raw TCP transport for the XF Architecture Model (sketch) — implements the lifecycle of the @xfcfam/xf-server contract over node:net. A deliberate boundary case: connection-oriented, no addressing.",
+  "author": "XF Contributors",
+  "license": "MIT",
+  "homepage": "https://xfcfam.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xfcfam/lib-npm",
+    "directory": "packages/xf-server-tcp"
+  },
+  "keywords": [
+    "xf",
+    "cfam",
+    "server",
+    "tcp",
+    "socket",
+    "sketch"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "vitest run --passWithNoTests"
+  },
+  "peerDependencies": {
+    "@xfcfam/xf": "workspace:^",
+    "@xfcfam/xf-server": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0"
+  }
+}

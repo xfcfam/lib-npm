@@ -16,6 +16,7 @@
  *                       {@link LockedBusiness}, {@link BatchedBusiness}
  * - **Interaction**  — {@link A}, {@link View}, {@link StatelessView},
  *                       {@link ObservableView}, {@link ScheduleView},
+ *                       {@link Service}, {@link StatelessService},
  *                       {@link CommandService}, {@link CronService}
  * - **Architecture** — {@link XF} (optional orchestrator)
  *
@@ -59,6 +60,8 @@ export { IllegalTransitionException } from './src/business/transfers/IllegalTran
 export { A } from './src/api/A.js'
 export { View } from './src/api/general/View.js'
 export { StatelessView } from './src/api/general/StatelessView.js'
+export { Service } from './src/api/general/Service.js'
+export { StatelessService } from './src/api/general/StatelessService.js'
 export { ObservableView } from './src/api/general/ObservableView.js'
 export { ScheduleView } from './src/api/general/ScheduleView.js'
 export { CommandService } from './src/api/general/CommandService.js'

@@ -1,5 +1,15 @@
 # `@xfcfam/xf`
 
+## 0.2.0
+
+### Minor Changes
+
+- Add `Service` and `StatelessService` — the systemic Interaction-Layer
+  generalizations, the `Service`-suffixed counterpart of `View` /
+  `StatelessView`. Structurally identical to `View`, semantically distinct
+  (GUI/presentation vs systemic services). `CommandService` and
+  `CronService` now extend `StatelessService` instead of `StatelessView`.
+
 This changelog is maintained by [Changesets](https://github.com/changesets/changesets).
 Do not edit manually — `pnpm version-packages` regenerates it from
 the `.md` files in `.changeset/`.

@@ -1,4 +1,4 @@
-import { UserBusiness } from './logic/UserBusiness'
+import { UserBusiness } from './logic/UserBusiness.js'
 
 /**
  * Business Layer Injection — canonical XF singleton.

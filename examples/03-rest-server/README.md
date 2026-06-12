@@ -1,53 +1,72 @@
 # 03-rest-server
 
-End-to-end example of `@xfcfam/xf-server`. Demonstrates **every
-documented capability** in a single runnable artefact:
+End-to-end example of [`@xfcfam/xf-server-http`](../../packages/xf-server-http).
+A single runnable XF artefact that serves **four entry-point shapes on
+one server and one port**: REST, Server-Sent Events, WebSocket and
+GraphQL.
 
 | Capability | Where to look |
 | --- | --- |
-| `RestService` (raw / streaming bodies) | `FilesRestService.events` (Server-Sent Events) |
-| `ObjectRestService` (auto-parse / auto-serialize JSON) | `UsersRestService`, `HealthRestService`, `FilesRestService` |
-| Object request bodies | `UsersRestService.create` / `update` |
-| Object response bodies | every `users` / `health` / `files` listing endpoint |
-| Streaming response | `FilesRestService.events` and `FilesRestService.preview` |
-| File response (attachment / inline) | `FilesRestService.download` / `preview` |
-| Multipart uploads (`multipart: true`) | `FilesRestService.upload` |
+| `ObjectRestService` (auto-parse / auto-serialise JSON) | `UsersRestService`, `HealthRestService`, `FilesRestService` |
+| `RestService` (raw / streaming bodies) | `FilesRestService.download` / `preview` / `events` |
+| Object request / response bodies | `UsersRestService.create` / `update`, every listing endpoint |
+| File response (attachment / inline, streamed) | `FilesRestService.download` / `preview` |
+| Multipart uploads (`multipart: { … }`) | `FilesRestService.upload` |
+| **SSE** via `SseUtils` (typed events) | `ClockSseService` → `GET /clock` |
+| **SSE** via `FileResponseUtils.stream` (raw) | `FilesRestService.events` → `GET /files/events` |
+| **WebSocket** (`B.server.ws`) | `ChatWebSocketService` → `WS /chat` |
+| **GraphQL** (`B.server.graphql`, Mercurius) | `ApiGraphQLService` → `POST /graphql` |
 | **Service-level** interceptors | `UsersRestService.onRequest` / `onResponse` |
-| **Server-level** interceptors | `AppServerService.onRequest` / `onResponse` / `onError` / `onStarted` / `onStopped` |
-| Selective wrapper (skip streams) | `AppServerService.onResponse` via `ResponseUtils.isObject` |
-| **`RestServerService.discover(A)`** auto-discovery | `A.server` constructor lambda + `AppServerService.services()` |
-| `import.meta.glob` auto-discovery recipe | this README, section below |
+| **Server-level** interceptors | `ServerBusiness.onRequest` / `onResponse` / `onError` / `onStarted` / `onStopped` |
+| Selective envelope (skip streams/files) | `ServerBusiness.onResponse` via `ResponseUtils.isObject` |
 | Typed exceptions | `NotFoundException`, `BadRequestException` thrown from handlers |
 
-## Project layout
+## Architecture
+
+The HTTP server is a **Business** component — `HttpServerBusiness` owns
+the Fastify lifecycle and the route registry, so the concrete
+`ServerBusiness` lives on `B` (`B.server`). Each Interaction service
+**pushes** its own routes to `B.server` from its `init()`:
+
+- REST    → `B.server.get/post/put/del(path, this.object(handler))`
+- SSE     → a plain `GET` returning `SseUtils.stream(...)`
+- WS      → `B.server.ws(path, this.accept(handler))`
+- GraphQL → `B.server.graphql(this.config())`
+
+The start-point (`main.ts`) calls `B.server.listen()` **after**
+`XF.init()` — i.e. after every service has registered — and
+`B.server.close()` before `XF.terminate()`.
 
 ```
 03-rest-server/
 ├── package.json
 ├── tsconfig.json
-├── main.ts                          ← entry point (outside /src)
+├── main.ts                              ← start-point: XF.init → B.server.listen
 └── src/
-    ├── XF.ts                        ← architecture orchestrator
+    ├── XF.ts                            ← architecture orchestrator (R → B → A)
     ├── repository/
-    │   ├── R.ts                     ← Access Injection
+    │   ├── R.ts                         ← Access Injection
     │   ├── logic/local/
-    │   │   ├── UsersRepository.ts   ← in-memory CRUD store
-    │   │   └── FilesRepository.ts   ← in-memory blob store
-    │   └── structs/
-    │       ├── User.ts              ← Transfer
-    │       └── StoredFile.ts        ← Transfer
+    │   │   ├── UsersRepository.ts       ← in-memory CRUD store
+    │   │   └── FilesRepository.ts       ← in-memory blob store
+    │   └── transfers/
+    │       ├── User.ts                  ← Transfer
+    │       └── StoredFile.ts            ← Transfer
     ├── business/
-    │   ├── B.ts                     ← Business Injection
+    │   ├── B.ts                         ← Business Injection (B.server / B.user / B.file)
     │   └── logic/
-    │       ├── UsersBusiness.ts     ← domain logic for users
-    │       └── FilesBusiness.ts     ← domain logic + SSE stream factory
+    │       ├── ServerBusiness.ts        ← extends HttpServerBusiness — global hooks, multipart
+    │       ├── UserBusiness.ts          ← domain logic for users
+    │       └── FileBusiness.ts          ← domain logic + SSE stream factory
     └── api/
-        ├── A.ts                     ← Interaction Injection (declares every Service)
+        ├── A.ts                         ← Interaction Injection (declares every Service)
         └── logic/service/
-            ├── UsersRestService.ts  ← ObjectRestService + service-level hooks
-            ├── FilesRestService.ts  ← multipart, downloads, SSE, streaming
-            ├── HealthRestService.ts ← trivial JSON + plain-text response
-            └── AppServerService.ts  ← RestServerService + global hooks + discover(A)
+            ├── UsersRestService.ts      ← ObjectRestService + service-level hooks
+            ├── FilesRestService.ts      ← multipart, downloads, raw SSE, streaming
+            ├── HealthRestService.ts     ← trivial JSON + plain-text response
+            ├── ClockSseService.ts       ← SSE via SseUtils
+            ├── ChatWebSocketService.ts  ← WebSocket echo channel
+            └── ApiGraphQLService.ts     ← GraphQL endpoint (Mercurius)
 ```
 
 ## Run
@@ -63,18 +82,21 @@ Listens on `http://localhost:3000` (override with `PORT=8080`).
 
 | Method | Path | What it does |
 | --- | --- | --- |
-| `GET`    | `/health`                 | health-check JSON |
-| `GET`    | `/ping`                   | plain-text `pong\n` |
-| `GET`    | `/users`                  | list users (JSON) |
-| `GET`    | `/users/:id`              | get one user |
-| `POST`   | `/users`                  | create user — JSON body |
-| `PUT`    | `/users/:id`              | update user — JSON body |
-| `DELETE` | `/users/:id`              | delete user → 204 |
-| `GET`    | `/files`                  | list file metadata |
-| `POST`   | `/files`                  | upload via `multipart/form-data` |
-| `GET`    | `/files/:id/download`     | attachment (forces save) |
-| `GET`    | `/files/:id/preview`     | inline (browser-rendered, streamed) |
-| `GET`    | `/files/events`           | Server-Sent Events stream (5 events @ 1s) |
+| `GET`    | `/health`             | health-check JSON |
+| `GET`    | `/ping`               | plain-text `pong\n` |
+| `GET`    | `/users`              | list users (JSON) |
+| `GET`    | `/users/:id`          | get one user |
+| `POST`   | `/users`              | create user — JSON body |
+| `PUT`    | `/users/:id`          | update user — JSON body |
+| `DELETE` | `/users/:id`          | delete user → 204 |
+| `GET`    | `/files`              | list file metadata |
+| `POST`   | `/files`              | upload via `multipart/form-data` |
+| `GET`    | `/files/:id/download` | attachment (forces save) |
+| `GET`    | `/files/:id/preview`  | inline (browser-rendered, streamed) |
+| `GET`    | `/files/events`       | raw SSE stream (5 events @ 1s) |
+| `GET`    | `/clock`              | **SSE** via `SseUtils` (typed `tick` events) |
+| `WS`     | `/chat`               | **WebSocket** echo channel |
+| `POST`   | `/graphql`            | **GraphQL** API (GraphiQL IDE on `GET`) |
 
 ### Try it
 
@@ -82,7 +104,7 @@ Listens on `http://localhost:3000` (override with `PORT=8080`).
 # Health
 curl http://localhost:3000/health
 
-# Object response (wrapped by server-level onResponse envelope)
+# Object response (wrapped by the server-level onResponse envelope)
 curl http://localhost:3000/users
 
 # Object request body
@@ -93,20 +115,27 @@ curl -X POST http://localhost:3000/users \
 # Multipart upload
 curl -F "file=@README.md" http://localhost:3000/files
 
-# Download (attachment)
+# Download (attachment) / preview (inline, streamed)
 curl -OJ http://localhost:3000/files/sample/download
+curl -i  http://localhost:3000/files/sample/preview
 
-# Preview (inline, streamed)
-curl -i http://localhost:3000/files/sample/preview
+# SSE (SseUtils)
+curl -N http://localhost:3000/clock
 
-# Server-Sent Events stream
-curl -N http://localhost:3000/files/events
+# GraphQL
+curl -X POST http://localhost:3000/graphql \
+  -H 'content-type: application/json' \
+  -d '{"query":"{ users { id name } }"}'
+
+# WebSocket — needs a WS client, e.g. websocat
+websocat ws://localhost:3000/chat
 ```
 
 ## Envelope policy
 
-The server-level `onResponse` hook in `AppServerService` applies a
-uniform envelope **only to object responses**:
+The server-level `onResponse` hook in `ServerBusiness` applies a uniform
+envelope **only to object responses**; streams, files, bytes and plain
+text pass through untouched:
 
 ```typescript
 override async onResponse(_req, res) {
@@ -115,70 +144,39 @@ override async onResponse(_req, res) {
 }
 ```
 
-The result:
+So `GET /users` → `{ code: '0', description: 'OK', data: [...] }`, while
+`GET /files/sample/download` (bytes), `GET /clock` (SSE) and `GET /ping`
+(text) are sent verbatim.
 
-- `GET /users` → `{ code: '0', description: 'OK', data: [...] }`
-- `GET /files/sample/download` → raw bytes of the file (no envelope)
-- `GET /files/events` → SSE stream (no envelope)
-- `GET /ping` → plain `pong\n` (textual, no envelope)
+## Registration model — push, not discover
 
-## Auto-discovery in `A`
-
-`A` declares every `RestService` as `static readonly` (the canonical
-XF pattern — every Logical of the Injection layer is a static field
-of the Injection class). The server orchestrator receives a lazy
-callback that calls `RestServerService.discover(A)`:
+`A` declares every service as `static readonly` (the canonical XF
+pattern), and each service registers **itself** on `B.server` from its
+own `init()`:
 
 ```typescript
-export class A {
-  private constructor() {}
-  static readonly usersService  = new UsersRestService()
-  static readonly filesService  = new FilesRestService()
-  static readonly healthService = new HealthRestService()
-  static readonly server        = new AppServerService(() => RestServerService.discover(A))
-  // ...
+// api/logic/service/UsersRestService.ts
+override async init(): Promise<void> {
+  B.server.get('/users',      this.object(this.list))
+  B.server.post('/users',     this.object(this.create))
+  B.server.del('/users/:id',  this.object(this.remove))
+}
+
+// api/logic/service/ChatWebSocketService.ts
+override async init(): Promise<void> {
+  B.server.ws('/chat', this.accept(this.onConnection))
+}
+
+// api/logic/service/ApiGraphQLService.ts
+override async init(): Promise<void> {
+  B.server.graphql(this.config())
 }
 ```
 
-`discover(A)` introspects `A`'s static fields and returns every
-`RestService` instance — the server itself is filtered out. Add a
-new endpoint? Declare a new `static readonly xxxService = new
-XxxRestService()` on `A` and you're done — the server picks it up.
-
-### Alternative: bundler-glob (Vite / esbuild only)
-
-For projects bundled with Vite or esbuild that support
-`import.meta.glob`, the discovery can be done at compile time
-instead of via reflection on `A`. The bundler resolves the glob at
-build time — zero filesystem access at runtime, no XF violations:
-
-```typescript
-// A.ts — Vite/esbuild variant
-import { RestServerService, type RestService } from '@xfcfam/xf-server'
-import { AppServerService } from './logic/service/AppServerService.js'
-
-const modules = import.meta.glob<{ default: new () => RestService }>(
-  './logic/service/*RestService.ts',
-  { eager: true, import: 'default' },
-)
-const discovered: RestService[] = Object.values(modules).map((Ctor) => new Ctor())
-
-export class A {
-  private constructor() {}
-  static readonly server = new AppServerService(() => discovered)
-  static async init()      { for (const s of discovered) await s.init(); await A.server.init() }
-  static async terminate() { await A.server.terminate(); for (const s of discovered) await s.terminate() }
-}
-```
-
-Each service file would `export default class XxxRestService extends
-RestService { ... }`. The bundler resolves the glob at compile time —
-zero filesystem access at runtime, no XF violations.
-
-This example uses the manual `static readonly` + `discover(A)`
-pattern instead because it works with plain `tsc` (no bundler
-required) and is more explicit. Pick the variant that fits your
-build setup.
+There is no reflection and no central route table to maintain: adding an
+endpoint is adding a `B.server.*` call in the relevant service's
+`init()`. The server (`B.server`) owns the registry; the services
+contribute to it.
 
 ## License
 

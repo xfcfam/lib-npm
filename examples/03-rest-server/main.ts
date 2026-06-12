@@ -1,18 +1,21 @@
 import { XF } from './src/XF.js'
+import { B } from './src/business/B.js'
 
 /**
  * Bootstrap of the 03-rest-server example.
  *
- * The artefact has an `XF` orchestrator that initialises Access →
- * Business → Interaction. The Interaction layer starts a Fastify
- * server on port 3000 and registers every `RestService` declared on
- * `A` via `RestServerService.discover(A)`.
- *
- * Press Ctrl-C to terminate; `XF.terminate()` shuts the server
- * gracefully so in-flight requests complete.
+ * Orchestration:
+ *   1. `XF.init()` — initialises R → B → A bottom-up. Services register
+ *      their routes on `B.server` inside their own `init()` calls.
+ *   2. `B.server.listen()` — starts the Fastify server after all routes
+ *      are registered. Kept outside `XF.init()` so the canonical XF
+ *      element stays delegation-only.
+ *   3. On SIGTERM / SIGINT: `B.server.close()` drains in-flight requests,
+ *      then `XF.terminate()` shuts down layers top-down (A → B → R).
  */
 async function main(): Promise<void> {
   await XF.init()
+  await B.server.listen()
 
   // Graceful shutdown on SIGTERM / SIGINT.
   let shuttingDown = false
@@ -20,6 +23,7 @@ async function main(): Promise<void> {
     if (shuttingDown) return
     shuttingDown = true
     console.log('\n▸ Shutting down…')
+    await B.server.close()
     await XF.terminate()
     console.log('▸ Done.')
     process.exit(0)

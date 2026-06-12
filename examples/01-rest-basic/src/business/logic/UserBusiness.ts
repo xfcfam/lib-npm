@@ -1,6 +1,6 @@
 import { StatelessBusiness } from '@xfcfam/xf'
-import { R } from '../../repository/R'
-import type { User } from '../../repository/transfers/User'
+import { R } from '../../repository/R.js'
+import type { User } from '../../repository/transfers/User.js'
 
 /**
  * Business Layer Logical for the User domain.
@@ -24,6 +24,6 @@ export class UserBusiness extends StatelessBusiness {
     const all = await R.usersRest.fetchAll()
     // Trivial domain rule: a user "looks active" if their email contains a dot.
     // The point is that this lives in Business, not Access.
-    return all.filter(u => u.email.includes('.'))
+    return all.filter((u: User) => u.email.includes('.'))
   }
 }

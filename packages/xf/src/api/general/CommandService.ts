@@ -1,4 +1,4 @@
-import { StatelessView } from './StatelessView.js'
+import { StatelessService } from './StatelessService.js'
 
 /**
  * Generalization for Interaction Layer components that act as an
@@ -37,7 +37,7 @@ import { StatelessView } from './StatelessView.js'
  * }
  * ```
  */
-export abstract class CommandService extends StatelessView {
+export abstract class CommandService extends StatelessService {
   /**
    * The command's invocation name (e.g. `validate`, `init`).
    * The dispatcher matches `argv[2]` (or equivalent) against this name.

@@ -1,7 +1,7 @@
 import { StatelessBusiness } from '@xfcfam/xf'
 import { UniqueViolationException } from '@xfcfam/xf-sql'
-import { R } from '../../repository/R'
-import type { User } from '../../repository/transfers/User'
+import { R } from '../../repository/R.js'
+import type { User } from '../../repository/transfers/User.js'
 
 /**
  * Business Layer Logical for the User domain.

@@ -10,7 +10,15 @@
     "url": "https://github.com/xfcfam/lib-npm",
     "directory": "packages/xf-sql-postgres"
   },
-  "keywords": ["xf", "cfam", "sql", "postgres", "postgresql", "kysely", "pg"],
+  "keywords": [
+    "xf",
+    "cfam",
+    "sql",
+    "postgres",
+    "postgresql",
+    "kysely",
+    "pg"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -20,8 +28,12 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist"],
-  "publishConfig": { "access": "public" },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
@@ -30,8 +42,8 @@
     "test:watch": "vitest"
   },
   "peerDependencies": {
-    "@xfcfam/xf": "workspace:^0.1.0",
-    "@xfcfam/xf-sql": "workspace:^0.1.0"
+    "@xfcfam/xf": "workspace:^",
+    "@xfcfam/xf-sql": "workspace:^"
   },
   "dependencies": {
     "pg": "^8.11.0"

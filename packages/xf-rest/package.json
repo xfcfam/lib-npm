@@ -10,7 +10,13 @@
     "url": "https://github.com/xfcfam/lib-npm",
     "directory": "packages/xf-rest"
   },
-  "keywords": ["xf", "cfam", "rest", "http", "ky"],
+  "keywords": [
+    "xf",
+    "cfam",
+    "rest",
+    "http",
+    "ky"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -20,8 +26,12 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist"],
-  "publishConfig": { "access": "public" },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
@@ -30,7 +40,7 @@
     "test:watch": "vitest"
   },
   "peerDependencies": {
-    "@xfcfam/xf": "workspace:^0.1.0"
+    "@xfcfam/xf": "workspace:^"
   },
   "dependencies": {
     "ky": "^1.7.0"

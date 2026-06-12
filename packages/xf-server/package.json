@@ -1,7 +1,7 @@
 {
   "name": "@xfcfam/xf-server",
   "version": "0.1.0",
-  "description": "HTTP server Interaction Layer Generalization for the XF Architecture Model — encapsulates Fastify behind canonical RestService / ObjectRestService bases.",
+  "description": "Transport-agnostic inbound-server contract for the XF Architecture Model — the abstract ServerBusiness / EntryService bases shared by every @xfcfam/xf-server-* protocol package.",
   "author": "XF Contributors",
   "license": "MIT",
   "homepage": "https://xfcfam.org",
@@ -10,7 +10,14 @@
     "url": "https://github.com/xfcfam/lib-npm",
     "directory": "packages/xf-server"
   },
-  "keywords": ["xf", "cfam", "server", "rest", "http", "fastify"],
+  "keywords": [
+    "xf",
+    "cfam",
+    "server",
+    "contract",
+    "entry-point",
+    "transport-agnostic"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -20,24 +27,23 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist"],
-  "publishConfig": { "access": "public" },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "test:watch": "vitest"
   },
   "peerDependencies": {
-    "@xfcfam/xf": "workspace:^0.1.0"
-  },
-  "dependencies": {
-    "fastify": "^5.0.0",
-    "@fastify/multipart": "^9.0.0"
+    "@xfcfam/xf": "workspace:^"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
     "typescript": "^5.4.0",
     "vitest": "^2.0.0"
   }

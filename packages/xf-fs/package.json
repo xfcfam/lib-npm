@@ -10,7 +10,14 @@
     "url": "https://github.com/xfcfam/lib-npm",
     "directory": "packages/xf-fs"
   },
-  "keywords": ["xf", "cfam", "filesystem", "fs", "files", "io"],
+  "keywords": [
+    "xf",
+    "cfam",
+    "filesystem",
+    "fs",
+    "files",
+    "io"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -20,17 +27,21 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist"],
-  "publishConfig": { "access": "public" },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "test:watch": "vitest"
   },
   "peerDependencies": {
-    "@xfcfam/xf": "workspace:^0.1.0"
+    "@xfcfam/xf": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

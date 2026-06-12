@@ -1,0 +1,56 @@
+{
+  "name": "@xfcfam/xf-server-grpc",
+  "version": "0.0.0",
+  "private": true,
+  "description": "gRPC transport for the XF Architecture Model (sketch) — implements the @xfcfam/xf-server contract over @grpc/grpc-js. Unary RPCs map onto the shared request pipeline; the protobuf service-definition binding is a documented TODO.",
+  "author": "XF Contributors",
+  "license": "MIT",
+  "homepage": "https://xfcfam.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xfcfam/lib-npm",
+    "directory": "packages/xf-server-grpc"
+  },
+  "keywords": [
+    "xf",
+    "cfam",
+    "server",
+    "grpc",
+    "rpc",
+    "protobuf",
+    "sketch"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "vitest run --passWithNoTests"
+  },
+  "peerDependencies": {
+    "@xfcfam/xf": "workspace:^",
+    "@xfcfam/xf-server": "workspace:^"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0"
+  }
+}

@@ -3,18 +3,22 @@ import {
   HttpStatusUtils,
   type HttpRequest,
   type HttpResponse,
-} from '@xfcfam/xf-server'
+} from '@xfcfam/xf-server-http'
+import { B } from '../../../business/B.js'
 
 /**
  * Trivial health-check service. Demonstrates that a `RestService`
- * can be tiny — three lines of route registration + a handler. The
- * server-level interceptors still apply to it (logging, CORS,
- * envelope wrapping if configured).
+ * can be tiny — two lines of route registration and two handlers.
+ * The server-level interceptors still apply (logging, envelope wrapping
+ * if configured).
+ *
+ * Routes are pushed to `B.server` from `init()` using
+ * `this.object(handler)` for automatic JSON serialisation.
  */
 export class HealthRestService extends ObjectRestService {
   override async init(): Promise<void> {
-    this.handle('GET', '/health', this.health)
-    this.handle('GET', '/ping',   this.ping)
+    B.server.get('/health', this.object(this.health))
+    B.server.get('/ping',   this.object(this.ping))
   }
 
   private async health(_req: HttpRequest): Promise<HttpResponse> {

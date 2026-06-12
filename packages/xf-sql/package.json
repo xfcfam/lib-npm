@@ -10,7 +10,13 @@
     "url": "https://github.com/xfcfam/lib-npm",
     "directory": "packages/xf-sql"
   },
-  "keywords": ["xf", "cfam", "sql", "kysely", "database"],
+  "keywords": [
+    "xf",
+    "cfam",
+    "sql",
+    "kysely",
+    "database"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -20,8 +26,12 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist"],
-  "publishConfig": { "access": "public" },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
@@ -33,7 +43,7 @@
     "kysely": "^0.27.0"
   },
   "peerDependencies": {
-    "@xfcfam/xf": "workspace:^0.1.0"
+    "@xfcfam/xf": "workspace:^"
   },
   "devDependencies": {
     "typescript": "^5.4.0",

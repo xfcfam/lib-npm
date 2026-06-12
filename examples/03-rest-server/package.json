@@ -4,13 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prestart": "pnpm --filter @xfcfam/xf --filter @xfcfam/xf-server build",
+    "prestart": "pnpm --filter @xfcfam/xf --filter @xfcfam/xf-server --filter @xfcfam/xf-server-http build",
     "start": "tsx main.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@xfcfam/xf": "workspace:^0.1.0",
-    "@xfcfam/xf-server": "workspace:^0.1.0"
+    "@xfcfam/xf": "workspace:^",
+    "@xfcfam/xf-server-http": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

@@ -1,5 +1,5 @@
 import { RetryRestRepository } from '@xfcfam/xf-rest'
-import type { User } from '../../transfers/User'
+import type { User } from '../../transfers/User.js'
 
 /**
  * Access Layer Logical for the Users REST API.

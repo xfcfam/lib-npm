@@ -1,69 +1,39 @@
 /**
- * `@xfcfam/xf-server` — HTTP server Interaction Layer Generalization
- * for the XF Architecture Model (CFAM).
+ * `@xfcfam/xf-server` — transport-agnostic **server contract** for the
+ * XF Architecture Model (CFAM).
  *
- * Exposes:
+ * This package holds no transport of its own. It defines the abstract
+ * contract that every concrete `@xfcfam/xf-server-*` package implements,
+ * so they all share one lifecycle, one registration model, and one
+ * request pipeline regardless of protocol:
  *
- * - **{@link RestService}** — Generalization for raw-body endpoints
- *   (streams or bytes). Use for uploads, downloads, SSE, anything
- *   where the body shape is not a parsed JS object.
+ * - **{@link ServerBusiness}** — Business-Layer Generalization. Owns the
+ *   route registry and the `onRequest → handler → onResponse` pipeline
+ *   (`dispatch`); leaves `listen` / `close` and the address / wire types
+ *   abstract for the protocol package.
+ * - **{@link EntryService}** — Interaction-Layer Generalization. The base
+ *   for entry-point services, with the per-service `wrap()` pipeline.
+ * - **Transfers**: {@link Route}, {@link Handler}, {@link ServerException}.
  *
- * - **{@link ObjectRestService}** — Same protocol, adds automatic
- *   request parsing and response serialisation by `Content-Type`.
- *   JSON built-in; XML/CSV/YAML pluggable.
+ * Concrete implementations:
  *
- * - **{@link RestServerService}** — Artefact-level server orchestrator.
- *   Concrete subclass declares which Services to expose; the base
- *   starts Fastify in `init()`, shuts down in `terminate()`. Includes
- *   `discover(InjectionClass)` static helper for zero-boilerplate
- *   service registration.
+ * - `@xfcfam/xf-server-http` — REST / WebSocket / SSE / GraphQL over Fastify.
+ * - `@xfcfam/xf-server-grpc` — gRPC over `@grpc/grpc-js` (sketch).
+ * - `@xfcfam/xf-server-tcp` / `-udp` — raw sockets (sketch).
  *
- * - **Transfers**: {@link HttpRequest}, {@link HttpResponse},
- *   {@link Route}, {@link HttpHandler}, {@link HttpMethod},
- *   {@link MultipartPart}.
- *
- * - **Exceptions**: {@link HttpException} (base) +
- *   `BadRequestException`, `UnauthorizedException`,
- *   `ForbiddenException`, `NotFoundException`,
- *   `InternalServerException`.
- *
- * - **Utilities**: {@link HttpStatusUtils} (status code constants),
- *   {@link SchemaValidatorUtils} (duck-typed validation),
- *   {@link FileResponseUtils} (attachment / inline / stream helpers).
+ * You typically install a concrete package, not this one directly.
  *
  * See https://xfcfam.org for the full XF specification.
  */
 
-// ── Interaction Generalizations ───────────────────────────
-export { RestService } from './src/api/general/RestService.js'
-export { ObjectRestService } from './src/api/general/ObjectRestService.js'
-export type {
-  ObjectRestOptions,
-  BodyParser,
-  BodySerializer,
-} from './src/api/general/ObjectRestService.js'
-export { RestServerService } from './src/api/general/RestServerService.js'
-export type { RestServerOptions, MultipartConfig } from './src/api/general/RestServerService.js'
+// ── Business Generalization ───────────────────────────────
+export { ServerBusiness } from './src/business/general/ServerBusiness.js'
+export type { ServerState } from './src/business/general/ServerBusiness.js'
+
+// ── Interaction Generalization ────────────────────────────
+export { EntryService } from './src/api/general/EntryService.js'
 
 // ── Transfers ─────────────────────────────────────────────
-export type { HttpMethod } from './src/api/transfers/HttpMethod.js'
-export type { HttpRequest } from './src/api/transfers/HttpRequest.js'
-export type { HttpResponse } from './src/api/transfers/HttpResponse.js'
-export type { Route, HttpHandler } from './src/api/transfers/Route.js'
-export type { MultipartPart } from './src/api/transfers/MultipartPart.js'
-
-// ── Exceptions ────────────────────────────────────────────
-export { HttpException } from './src/api/transfers/HttpException.js'
-export { BadRequestException } from './src/api/transfers/BadRequestException.js'
-export { UnauthorizedException } from './src/api/transfers/UnauthorizedException.js'
-export { ForbiddenException } from './src/api/transfers/ForbiddenException.js'
-export { NotFoundException } from './src/api/transfers/NotFoundException.js'
-export { InternalServerException } from './src/api/transfers/InternalServerException.js'
-
-// ── Utilities ─────────────────────────────────────────────
-export { HttpStatusUtils } from './src/api/utils/HttpStatusUtils.js'
-export { SchemaValidatorUtils } from './src/api/utils/SchemaValidatorUtils.js'
-export type { Schema, SchemaParseResult } from './src/api/utils/SchemaValidatorUtils.js'
-export { FileResponseUtils } from './src/api/utils/FileResponseUtils.js'
-export type { FileBody } from './src/api/utils/FileResponseUtils.js'
-export { ResponseUtils } from './src/api/utils/ResponseUtils.js'
+export type { Route } from './src/business/transfers/Route.js'
+export type { Handler } from './src/business/transfers/Handler.js'
+export { ServerException } from './src/business/transfers/ServerException.js'

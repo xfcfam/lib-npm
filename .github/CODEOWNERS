@@ -12,8 +12,16 @@
 
 # Per-implementation packages.
 /packages/xf-rest/             @isramatrix
+/packages/xf-fs/               @isramatrix
 /packages/xf-sql/              @isramatrix
 /packages/xf-sql-postgres/     @isramatrix
+
+# Inbound-server contract + transports.
+/packages/xf-server/           @isramatrix
+/packages/xf-server-http/      @isramatrix
+/packages/xf-server-grpc/      @isramatrix
+/packages/xf-server-tcp/       @isramatrix
+/packages/xf-server-udp/       @isramatrix
 
 # Build, release, and CI infra.
 /.changeset/                   @isramatrix
