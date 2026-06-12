@@ -1,6 +1,6 @@
 {
   "name": "@xfcfam/xf-sql",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SQL Access Layer Generalization for the XF Architecture Model — encapsulates the Kysely query builder. Dialect-agnostic; pair with @xfcfam/xf-sql-postgres / @xfcfam/xf-sql-mysql / etc.",
   "author": "XF Contributors",
   "license": "MIT",
