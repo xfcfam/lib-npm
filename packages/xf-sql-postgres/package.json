@@ -46,7 +46,7 @@
     "@xfcfam/xf-sql": "workspace:^"
   },
   "dependencies": {
-    "pg": "^8.11.0"
+    "pg": "^8.21.0"
   },
   "devDependencies": {
     "typescript": "^6.0.3",
