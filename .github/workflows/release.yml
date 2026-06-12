@@ -1,35 +1,25 @@
 name: release
 
-# Full-auto publishing.
+# Token-free release via the standard Changesets PR flow.
 #
-# A push to `main` (i.e. a merged PR) that carries one or more changesets is
-# versioned and published to npm in the SAME run — there is no intermediate
-# "Version Packages" PR:
-#   1. `changeset version` applies the pending changesets (bumps versions,
-#      writes CHANGELOGs, deletes the consumed changeset files);
-#   2. the version bump + updated lockfile is committed back to `main`;
-#   3. `changeset publish` publishes every package whose version is ahead of
-#      npm and creates one git tag per published package.
+# On a push to `main` that carries pending changesets, the Changesets action
+# opens (or updates) a "Version Packages" PR on a `changeset-release/main`
+# branch — using the built-in GITHUB_TOKEN, no PAT. Merging that PR lands the
+# version bumps + CHANGELOGs on `main` through the normal protected-branch PR
+# flow, so NO branch-protection bypass and NO long-lived token are needed.
+# The merge re-triggers this workflow, which now finds no pending changesets
+# and runs `changeset publish`.
 #
-# Governance: `main` is protected so that ONLY the maintainer can merge a PR.
-# The merge therefore *is* the release decision. A push with no pending
-# changesets (docs/CI-only PRs, or the bot's own version commit) is a no-op.
+# npm auth is **trusted publishing (OIDC)** — NO npm token. The job's
+# `id-token: write` + each package's Trusted Publisher config (org `xfcfam`,
+# repo `lib-npm`, workflow `release.yml`, environment `release`) let npm verify
+# this run. Provenance attestations are generated automatically.
 #
-# Authentication to npm is **trusted publishing (OIDC)** — NO npm token is
-# stored. The job's `id-token: write` lets npm verify this exact repo +
-# workflow; each package lists this workflow as a Trusted Publisher on
-# npmjs.com. Provenance attestations are generated automatically.
-#
-# Required configuration (see RELEASING.md):
-#   - A GitHub Environment named `release`, restricted to the `main` branch
-#     (Settings → Environments → deployment branch policy = main only).
-#   - On npmjs.com, per package: Settings → Trusted Publisher → GitHub Actions
-#     → org `xfcfam`, repo `lib-npm`, workflow `release.yml`, Environment `release`.
-#   - secret RELEASE_TOKEN  PAT (or App token) with contents:write, on the
-#                           branch-ruleset bypass list, so the version commit
-#                           can land on protected `main`. (Git push only — npm
-#                           auth is handled by OIDC, not this token.)
-# The `[skip ci]` tag on that commit stops it re-triggering this workflow.
+# Required configuration:
+#   - Settings → Actions → General → "Allow GitHub Actions to create and
+#     approve pull requests" (so the action can open the Version PR).
+#   - A GitHub Environment `release`, restricted to `main`.
+#   - Per-package Trusted Publisher on npmjs.com (environment `release`).
 
 on:
   push:
@@ -39,72 +29,46 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 permissions:
   contents: write
+  pull-requests: write
   id-token: write
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    # The publish runs in the `release` environment, which is restricted to the
-    # `main` branch (deployment branch policy). npm's Trusted Publisher also
-    # checks this environment name, so a publish is only accepted when it runs
-    # from `release` ⇒ from `main`. No required reviewers here ⇒ stays full-auto.
     environment: release
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.RELEASE_TOKEN }}
-
-      - name: Detect pending changesets
-        id: cs
-        run: |
-          if ls .changeset/*.md 2>/dev/null | grep -qv 'README.md'; then
-            echo "pending=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "pending=false" >> "$GITHUB_OUTPUT"
-            echo "No pending changesets — nothing to release."
-          fi
 
       - name: Set up pnpm
-        if: steps.cs.outputs.pending == 'true'
         uses: pnpm/action-setup@v4
         with:
           run_install: false
 
       - name: Set up Node.js
-        if: steps.cs.outputs.pending == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
           cache: 'pnpm'
 
       - name: Install
-        if: steps.cs.outputs.pending == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Upgrade npm for OIDC
-        if: steps.cs.outputs.pending == 'true'
         # Runners ship npm 10.x; trusted publishing needs npm >= 11.5.1.
         # `pnpm changeset publish` calls npm under the hood, so upgrade it.
         run: npm install -g npm@latest
 
-      - name: Version, build, publish, push
-        if: steps.cs.outputs.pending == 'true'
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          pnpm changeset version
-          pnpm install --lockfile-only
-          pnpm build
-          git add -A
-          git commit -m "chore(release): version packages [skip ci]"
-          # Land the version bump on protected main FIRST. If branch protection
-          # is misconfigured this fails here — before anything reaches npm.
-          git push origin HEAD:main
-          # Now publish (creates tags), then push the tags.
-          pnpm changeset publish
-          git push --tags origin
+      - name: Create Release PR or Publish
+        uses: changesets/action@v1
+        with:
+          version: pnpm changeset version && pnpm install --lockfile-only
+          publish: pnpm build && pnpm changeset publish
+          commit: "chore(release): version packages"
+          title: "chore(release): version packages"
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: "true"

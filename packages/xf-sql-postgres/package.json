@@ -50,8 +50,8 @@
   },
   "devDependencies": {
     "typescript": "^5.4.0",
-    "vitest": "^2.0.0",
-    "kysely": "^0.27.0",
+    "vitest": "^3.2.6",
+    "kysely": "^0.28.17",
     "@types/pg": "^8.11.0"
   }
 }

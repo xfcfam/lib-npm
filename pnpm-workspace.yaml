@@ -1,6 +1,14 @@
 packages:
   - 'packages/*'
   - 'examples/*'
+
 allowBuilds:
   esbuild: true
-  protobufjs: set this to true or false
+
+# Security overrides — force patched versions of vulnerable transitive
+# deps (advisories cleared in the repo's lockfile). These apply only to
+# this workspace, not to consumers of the published packages.
+overrides:
+  fast-uri: '>=3.1.2'
+  vite: '>=6.4.2'
+  esbuild: '>=0.24.3'
