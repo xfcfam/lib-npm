@@ -1,5 +1,14 @@
 # `@xfcfam/xf-sql-postgres`
 
+## 0.1.1
+
+### Patch Changes
+
+- 5ad6091: docs: clarify that `pg` and `kysely` are bundled and wired internally —
+  the adapter builds the `pg.Pool` and `PostgresDialect` in its constructor,
+  so the implementer installs neither. Corrected the peer-dependency list
+  (only `@xfcfam/xf` and `@xfcfam/xf-sql`) and the install command.
+
 This changelog is maintained by [Changesets](https://github.com/changesets/changesets).
 Do not edit manually — `pnpm version-packages` regenerates it from
 the `.md` files in `.changeset/`.

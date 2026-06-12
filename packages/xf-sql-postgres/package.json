@@ -1,6 +1,6 @@
 {
   "name": "@xfcfam/xf-sql-postgres",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "PostgreSQL dialect adapter for @xfcfam/xf-sql. Encapsulates kysely's PostgresDialect and the `pg` driver. Translates Postgres SQLSTATE codes into the typed Exceptions of @xfcfam/xf-sql.",
   "author": "XF Contributors",
   "license": "MIT",
