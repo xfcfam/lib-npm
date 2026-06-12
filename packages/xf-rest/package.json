@@ -46,7 +46,7 @@
     "ky": "^1.7.0"
   },
   "devDependencies": {
-    "typescript": "^5.4.0",
+    "typescript": "^6.0.3",
     "vitest": "^2.0.0"
   }
 }

@@ -19,7 +19,7 @@
     "@xfcfam/xf-sql-postgres": "workspace:^"
   },
   "devDependencies": {
-    "typescript": "^5.4.0",
+    "typescript": "^6.0.3",
     "tsx": "^4.0.0",
     "@types/node": "^20.0.0",
     "@types/pg": "^8.11.0",

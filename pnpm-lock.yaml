@@ -12,8 +12,8 @@ importers:
         specifier: ^2.27.0
         version: 2.31.0(@types/node@20.19.41)
       typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
       vitest:
         specifier: ^2.0.0
         version: 2.1.9(@types/node@20.19.41)
@@ -37,8 +37,8 @@ importers:
         specifier: ^4.0.0
         version: 4.22.0
       typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   examples/02-sql-postgres:
     dependencies:
@@ -65,8 +65,8 @@ importers:
         specifier: ^4.0.0
         version: 4.22.0
       typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   examples/03-rest-server:
     dependencies:
@@ -84,14 +84,14 @@ importers:
         specifier: ^4.19.0
         version: 4.22.0
       typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   packages/xf:
     devDependencies:
       typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
       vitest:
         specifier: ^2.0.0
         version: 2.1.9(@types/node@20.19.41)
@@ -106,8 +106,8 @@ importers:
         specifier: ^20.0.0
         version: 20.19.41
       typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
       vitest:
         specifier: ^2.0.0
         version: 2.1.9(@types/node@20.19.41)
@@ -122,8 +122,8 @@ importers:
         version: 1.14.3
     devDependencies:
       typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
       vitest:
         specifier: ^2.0.0
         version: 2.1.9(@types/node@20.19.41)
@@ -135,8 +135,8 @@ importers:
         version: link:../xf
     devDependencies:
       typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
       vitest:
         specifier: ^2.0.0
         version: 2.1.9(@types/node@20.19.41)
@@ -154,8 +154,8 @@ importers:
         specifier: ^20.0.0
         version: 20.19.41
       typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
       vitest:
         specifier: ^2.0.0
         version: 2.1.9(@types/node@20.19.41)
@@ -188,8 +188,8 @@ importers:
         specifier: ^20.0.0
         version: 20.19.41
       typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
       vitest:
         specifier: ^2.0.0
         version: 2.1.9(@types/node@20.19.41)
@@ -207,8 +207,8 @@ importers:
         specifier: ^20.0.0
         version: 20.19.41
       typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
       vitest:
         specifier: ^2.0.0
         version: 2.1.9(@types/node@20.19.41)
@@ -226,8 +226,8 @@ importers:
         specifier: ^20.0.0
         version: 20.19.41
       typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
       vitest:
         specifier: ^2.0.0
         version: 2.1.9(@types/node@20.19.41)
@@ -242,8 +242,8 @@ importers:
         version: 0.27.6
     devDependencies:
       typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
       vitest:
         specifier: ^2.0.0
         version: 2.1.9(@types/node@20.19.41)
@@ -267,8 +267,8 @@ importers:
         specifier: ^0.27.0
         version: 0.27.6
       typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
       vitest:
         specifier: ^2.0.0
         version: 2.1.9(@types/node@20.19.41)
@@ -1672,8 +1672,8 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  typescript@5.9.3:
-    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+  typescript@6.0.3:
+    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -3097,7 +3097,7 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
-  typescript@5.9.3: {}
+  typescript@6.0.3: {}
 
   undici-types@6.21.0: {}
 
