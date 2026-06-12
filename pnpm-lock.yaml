@@ -59,8 +59,8 @@ importers:
         specifier: ^8.11.0
         version: 8.20.0
       kysely:
-        specifier: ^0.27.0
-        version: 0.27.6
+        specifier: ^0.28.17
+        version: 0.28.17
       tsx:
         specifier: ^4.0.0
         version: 4.22.0
@@ -238,8 +238,8 @@ importers:
         specifier: workspace:^
         version: link:../xf
       kysely:
-        specifier: ^0.27.0
-        version: 0.27.6
+        specifier: ^0.28.17
+        version: 0.28.17
     devDependencies:
       typescript:
         specifier: ^5.4.0
@@ -264,8 +264,8 @@ importers:
         specifier: ^8.11.0
         version: 8.20.0
       kysely:
-        specifier: ^0.27.0
-        version: 0.27.6
+        specifier: ^0.28.17
+        version: 0.28.17
       typescript:
         specifier: ^5.4.0
         version: 5.9.3
@@ -1245,9 +1245,9 @@ packages:
     resolution: {integrity: sha512-9zy9lkjac+TR1c2tG+mkNSVlyOpInnWdSMiue4F+kq8TwJSgv6o8jhLRg8Ho6SnZ9wOYUq/yozts9qQCfk7bIw==}
     engines: {node: '>=18'}
 
-  kysely@0.27.6:
-    resolution: {integrity: sha512-FIyV/64EkKhJmjgC0g2hygpBv5RNWVPyNCqSAD7eTCv6eFWNIi4PN1UvdSJGicN/o35bnevgis4Y0UDC0qi8jQ==}
-    engines: {node: '>=14.0.0'}
+  kysely@0.28.17:
+    resolution: {integrity: sha512-nbD8lB9EB3wNdMhOCdx5Li8DxnLbvKByylRLcJ1h+4SkrowVeECAyZlyiKMThF7xFdRz0jSQ2MoJr+wXux2y0Q==}
+    engines: {node: '>=20.0.0'}
 
   light-my-request@6.6.0:
     resolution: {integrity: sha512-CHYbu8RtboSIoVsHZ6Ye4cj4Aw/yg2oAFimlF7mNvfDV192LR7nDiKtSIfCuLT7KokPSTn/9kfVLm5OGN0A28A==}
@@ -2711,7 +2711,7 @@ snapshots:
 
   ky@1.14.3: {}
 
-  kysely@0.27.6: {}
+  kysely@0.28.17: {}
 
   light-my-request@6.6.0:
     dependencies:
