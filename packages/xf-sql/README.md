@@ -13,14 +13,15 @@ packages:
 
 Or supply any Kysely `Dialect` directly to `DatabaseRepository`.
 
-Peer dependency: `@xfcfam/xf`. `kysely` is a direct (bundled) dependency.
+Peer dependency: `@xfcfam/xf`. `kysely` is a direct (bundled)
+dependency — you never install it separately.
 
 ## Install
 
 ```bash
-pnpm add @xfcfam/xf @xfcfam/xf-sql kysely
-# plus one dialect adapter, e.g.
-pnpm add @xfcfam/xf-sql-postgres pg
+pnpm add @xfcfam/xf @xfcfam/xf-sql
+# plus one dialect adapter — it bundles its own driver, e.g. Postgres:
+pnpm add @xfcfam/xf-sql-postgres
 ```
 
 ## What ships here
@@ -78,9 +79,12 @@ export class UsersDb extends TransactionalDatabaseRepository<Schema> {
 ```
 
 > The example above uses the generic `DatabaseRepository` with a
-> raw Kysely dialect. In a real project you would typically extend
+> raw Kysely dialect — this DIY path is the one case where you bring
+> the driver yourself (`pnpm add pg`), since xf-sql is dialect-agnostic
+> and bundles no driver. In a real project you would typically extend
 > `PostgresDatabaseRepository` from `@xfcfam/xf-sql-postgres`, which
-> wires the dialect and translates Postgres errors automatically.
+> **bundles `pg`**, wires the dialect, and translates Postgres errors
+> automatically — no driver to install.
 
 ## Batching pattern (deferred writes)
 

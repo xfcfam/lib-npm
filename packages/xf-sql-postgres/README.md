@@ -5,15 +5,18 @@ Encapsulates `kysely`'s `PostgresDialect` over the [`pg`](https://node-postgres.
 driver and ships the SQLSTATE → typed-Exception translation so the
 Business Layer never sees `pg` errors.
 
-Peer dependencies: [`@xfcfam/xf`](https://www.npmjs.com/package/@xfcfam/xf),
-[`@xfcfam/xf-sql`](https://www.npmjs.com/package/@xfcfam/xf-sql),
-[`kysely`](https://kysely.dev).
-Runtime dependency: `pg`.
+Peer dependencies: [`@xfcfam/xf`](https://www.npmjs.com/package/@xfcfam/xf)
+and [`@xfcfam/xf-sql`](https://www.npmjs.com/package/@xfcfam/xf-sql). The
+[`pg`](https://node-postgres.com) driver and the
+[`kysely`](https://kysely.dev) query builder are **bundled and wired
+internally**: the adapter builds the `pg.Pool` and the `PostgresDialect`
+for you in its constructor, so the implementer never installs or imports
+either one (`kysely` arrives transitively through `@xfcfam/xf-sql`).
 
 ## Install
 
 ```bash
-pnpm add @xfcfam/xf @xfcfam/xf-sql @xfcfam/xf-sql-postgres kysely pg
+pnpm add @xfcfam/xf @xfcfam/xf-sql @xfcfam/xf-sql-postgres
 ```
 
 ## What ships here
