@@ -117,6 +117,25 @@ importers:
         specifier: ^4.1.8
         version: 4.1.8(@types/node@25.9.3)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.0)(tsx@4.22.4))
 
+  packages/xf-react-view:
+    dependencies:
+      '@xfcfam/xf':
+        specifier: workspace:^
+        version: link:../xf
+      react:
+        specifier: '>=18.0.0'
+        version: 19.2.7
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.3
+        version: 25.9.3
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.8
+        version: 4.1.8(@types/node@25.9.3)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.0)(tsx@4.22.4))
+
   packages/xf-rest:
     dependencies:
       '@xfcfam/xf':
@@ -1406,6 +1425,10 @@ packages:
   quick-lru@7.3.0:
     resolution: {integrity: sha512-k9lSsjl36EJdK7I06v7APZCbyGT2vMTsYSRX1Q2nbYmnkBqgUhRkAuzH08Ciotteu/PLJmIF2+tti7o3C/ts2g==}
     engines: {node: '>=18'}
+
+  react@19.2.7:
+    resolution: {integrity: sha512-HNe9WslTbXmFK8o8cmwgAeJFSBvt1bPdHCVKtaaV+WlAN36mpT4hcRpwbf3fY56ar2oIXzsBpOAiIRHAdY0OlQ==}
+    engines: {node: '>=0.10.0'}
 
   read-yaml-file@1.1.0:
     resolution: {integrity: sha512-VIMnQi/Z4HT2Fxuwg5KrY174U1VdUIASQVWXXyqtNRtxSr9IYkn1rsI6Tb6HsrHCmB7gVpNwX6JxPTHcH6IoTA==}
@@ -2834,6 +2857,8 @@ snapshots:
   quick-format-unescaped@4.0.4: {}
 
   quick-lru@7.3.0: {}
+
+  react@19.2.7: {}
 
   read-yaml-file@1.1.0:
     dependencies:

@@ -29,6 +29,7 @@ adapter.
 | [`@xfcfam/xf-server`](./packages/xf-server) | Interaction + Business | Transport-agnostic **inbound-server contract**: the abstract `ServerBusiness` / `EntryService` bases (registry + lifecycle + request pipeline) shared by every `xf-server-*` transport. No transport of its own. | `pnpm add @xfcfam/xf @xfcfam/xf-server` |
 | [`@xfcfam/xf-server-http`](./packages/xf-server-http) | Interaction + Business | HTTP transport over Fastify — **REST · WebSocket · SSE · GraphQL** on one port. `HttpServerBusiness` + `RestService` / `ObjectRestService` / `WebSocketService` / `GraphQLService`. | `pnpm add @xfcfam/xf @xfcfam/xf-server @xfcfam/xf-server-http` |
 | [`@xfcfam/xf-server-grpc`](./packages/xf-server-grpc) · [`-tcp`](./packages/xf-server-tcp) · [`-udp`](./packages/xf-server-udp) | Interaction + Business | **Sketches** — typed skeletons of other transports (gRPC, raw TCP, UDP) that compile against the `xf-server` contract, demonstrating its reach. Not production-ready. | — |
+| [`@xfcfam/xf-react-view`](./packages/xf-react-view) | Interaction | React presentation Generalizations. The **Mixin Generalizations** `ReactView` / `ObservableReactView` / `StatelessReactView` graft the Interaction-Layer `View` onto a `React.Component` peer base, so a component inherits the actual Generalization without surrendering its framework base. | `pnpm add @xfcfam/xf @xfcfam/xf-react-view react` |
 
 ## Quick start
 
@@ -86,7 +87,8 @@ lib-npm/
 │   ├── xf-server-http/     ← @xfcfam/xf-server-http  — HTTP transport (REST/WS/SSE/GraphQL)
 │   ├── xf-server-grpc/     ← @xfcfam/xf-server-grpc  — gRPC transport (sketch)
 │   ├── xf-server-tcp/      ← @xfcfam/xf-server-tcp   — raw TCP transport (sketch)
-│   └── xf-server-udp/      ← @xfcfam/xf-server-udp   — UDP transport (sketch)
+│   ├── xf-server-udp/      ← @xfcfam/xf-server-udp   — UDP transport (sketch)
+│   └── xf-react-view/      ← @xfcfam/xf-react-view   — React View Mixin Generalizations
 └── examples/
     ├── 01-rest-basic/      — REST client artefact (xf + xf-rest)
     ├── 02-sql-postgres/    — Postgres artefact (xf + xf-sql + xf-sql-postgres)
