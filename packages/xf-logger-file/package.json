@@ -1,6 +1,6 @@
 {
   "name": "@xfcfam/xf-logger-file",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Rotating file 'tree' for @xfcfam/xf-logger — size + daily rotation over the @xfcfam/xf-fs FileRepository. Plant it into R.logger for durable, rotated file logs.",
   "author": "XF Contributors",
   "license": "MIT",
