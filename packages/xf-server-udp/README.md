@@ -1,43 +1,52 @@
-# `@xfcfam/xf-server-udp` — sketch
+# 🧩 `@xfcfam/xf-server-udp`
 
-UDP transport for the **XF Architecture Model**, over Node's built-in
-[`node:dgram`](https://nodejs.org/api/dgram.html) (zero external
-dependencies). Implements the [`@xfcfam/xf-server`](../xf-server)
-contract.
+> UDP transport for the **XF Architecture Model** over
+> [`node:dgram`](https://nodejs.org/api/dgram.html) (zero external deps) — the
+> [`@xfcfam/xf-server`](https://www.npmjs.com/package/@xfcfam/xf-server) contract.
 
-> **Status: sketch.**
+> [!WARNING]
+> **Status: sketch.** Unlike TCP, UDP fits the core well — each datagram is a
+> message with an optional reply (a loose request → response). What it lacks is
+> *addressing*: one handler per socket.
 
-## How it maps to the contract
+## 📦 Install
 
-Unlike TCP, UDP fits the core pipeline reasonably well. Each datagram is
-an independent message, and a handler may return an **optional reply** —
-a loose request → response. So a datagram flows through the core
-`dispatch` (`onRequest → handler → onResponse`, `onError` in the catch),
-and the reply is sent back to the origin. What UDP lacks is *addressing*:
-one handler per socket (address slot `null`).
+```bash
+npm i @xfcfam/xf @xfcfam/xf-server @xfcfam/xf-server-udp
+```
 
-| Core contract | Used by UDP? |
-| --- | --- |
-| Lifecycle | ✅ yes |
-| `dispatch` pipeline | ✅ yes — datagram in, optional reply out |
-| Address registry | ⚠️ degenerate — single handler, address `null` |
+## 🚀 Shape
 
-## Shape
-
-```typescript
+```ts
 import { UdpServerBusiness, type Datagram, type DatagramReply } from '@xfcfam/xf-server-udp'
 
 export class PingServer extends UdpServerBusiness {
   constructor() { super({ port: 41234 }) }
 }
-
-// Register the single datagram handler:
-B.server.message((dg: Datagram): DatagramReply | null => {
-  const text = new TextDecoder().decode(dg.data).trim()
-  return text === 'ping' ? { data: 'pong' } : null   // null = stay silent
-})
+B.server.message((dg: Datagram): DatagramReply | null =>
+  new TextDecoder().decode(dg.data).trim() === 'ping' ? { data: 'pong' } : null) // null = silent
 ```
 
-## License
+## 🧰 Exported Components
 
-MIT.
+### Generalizations
+
+| Component | Description |
+|---|---|
+| [`UdpServerBusiness`](./src/business/general/UdpServerBusiness.ts) | The UDP orchestrator over `node:dgram`. A handler takes a `Datagram` and returns an optional `DatagramReply`. |
+
+## 🔗 What maps
+
+| Core contract | UDP |
+|---|---|
+| Lifecycle | yes |
+| `dispatch` pipeline | yes — datagram in, optional reply out |
+| Address registry | degenerate — single handler, address `null` |
+
+## 📚 Documentation
+
+Full specification → **[xfcfam.org](https://xfcfam.org)**
+
+## ⚖️ License
+
+MIT

@@ -46,6 +46,7 @@ export abstract class TcpServerBusiness extends ServerBusiness<null, TcpConnecti
     this.register(null, handler)
   }
 
+  /** Start the TCP server and begin accepting connections. */
   override async listen(): Promise<void> {
     const route = this.routes[0]
     const handler: TcpHandler = route?.handler ?? (() => {})
@@ -60,6 +61,7 @@ export abstract class TcpServerBusiness extends ServerBusiness<null, TcpConnecti
     await this.onStarted()
   }
 
+  /** Stop the TCP server and release the port. */
   override async close(): Promise<void> {
     const server = this.state.server
     if (server !== undefined) {

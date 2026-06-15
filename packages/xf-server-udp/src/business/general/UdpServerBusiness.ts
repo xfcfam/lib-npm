@@ -42,6 +42,7 @@ export abstract class UdpServerBusiness extends ServerBusiness<null, Datagram, D
     this.register(null, handler)
   }
 
+  /** Start the UDP socket and begin receiving datagrams. */
   override async listen(): Promise<void> {
     const route = this.routes[0]
     const handler: DatagramHandler = route?.handler ?? (() => null)
@@ -69,6 +70,7 @@ export abstract class UdpServerBusiness extends ServerBusiness<null, Datagram, D
     await this.onStarted()
   }
 
+  /** Stop the UDP socket and release the port. */
   override async close(): Promise<void> {
     const socket = this.state.socket
     if (socket !== undefined) {

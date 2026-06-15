@@ -1,59 +1,57 @@
-# `@xfcfam/xf-server-grpc` — sketch
+# 🧩 `@xfcfam/xf-server-grpc`
 
-gRPC transport for the **XF Architecture Model**. Implements the
-transport-agnostic [`@xfcfam/xf-server`](../xf-server) contract over
-[`@grpc/grpc-js`](https://github.com/grpc/grpc-node).
+> gRPC transport for the **XF Architecture Model** — the
+> [`@xfcfam/xf-server`](https://www.npmjs.com/package/@xfcfam/xf-server) contract
+> over [`@grpc/grpc-js`](https://github.com/grpc/grpc-node).
 
-> **Status: sketch.** This package is a typed skeleton. It compiles
-> against the core contract and wires the full lifecycle, route registry
-> and request pipeline; the protobuf service-definition binding (loading
-> a `.proto` and calling `server.addService`) is a documented `TODO` in
-> `GrpcServerBusiness.listen()`. It exists to prove the abstraction fits
-> a second request/response transport beyond HTTP — not yet for
-> production use.
+> [!WARNING]
+> **Status: sketch.** A typed skeleton — it compiles against the contract and
+> wires the lifecycle, registry and pipeline; binding a `.proto` service definition
+> in `listen()` is a documented `TODO`. It proves the abstraction fits a second
+> request/response transport beyond HTTP — not yet for production.
 
-## Why it fits the contract cleanly
+## 📦 Install
 
-A gRPC unary RPC is request → response, exactly like an HTTP request. So
-it maps onto the core with no friction:
+```bash
+npm i @xfcfam/xf @xfcfam/xf-server @xfcfam/xf-server-grpc
+```
 
-| Core contract | HTTP | gRPC |
-| --- | --- | --- |
-| `TAddr` (address) | `{ method, path }` | `{ service, method }` |
-| `TReq` / `TRes` | `HttpRequest` / `HttpResponse` | `GrpcRequest` / `GrpcResponse` |
-| `dispatch` pipeline | `onRequest → handler → onResponse` | identical |
-| `ServerException` | `HttpException` (+ `status`) | `GrpcException` (+ `code`) |
+## 🚀 Shape
 
-## Shape
-
-```typescript
-import { GrpcServerBusiness, GrpcException, type GrpcRequest, type GrpcResponse } from '@xfcfam/xf-server-grpc'
+```ts
+import { GrpcServerBusiness, GrpcException,
+         type GrpcRequest, type GrpcResponse } from '@xfcfam/xf-server-grpc'
 
 export class AppGrpcServer extends GrpcServerBusiness {
   constructor() { super({ port: 50051 }) }
 }
-
-// In a service's init(), push RPCs to B.server:
-export class UsersGrpcService /* extends an Interaction base */ {
-  init() {
-    B.server.unary('users.UserService', 'GetUser', this.getUser)
-  }
-  private async getUser(req: GrpcRequest<{ id: string }>): Promise<GrpcResponse> {
-    const user = await B.usersBusiness.findById(req.message.id)
-    if (user === null) throw new GrpcException(5 /* NOT_FOUND */, `User ${req.message.id}`)
-    return { message: user }
-  }
-}
+// in a service's init():  B.server.unary('users.UserService', 'GetUser', this.getUser)
 ```
 
-## What's pending
+## 🧰 Exported Components
 
-- Load `.proto` files via `@grpc/proto-loader` and bind each registered
-  route to its `ServiceDefinition` (`server.addService(def, impl)`),
-  where `impl[method] = this.adapt(service, method, handler)`.
-- Streaming RPCs (client / server / bidi) — the unary path is sketched;
-  streaming would mirror the WebSocket model in `@xfcfam/xf-server-http`.
+### Generalizations
 
-## License
+| Component | Description |
+|---|---|
+| [`GrpcServerBusiness`](./src/business/general/GrpcServerBusiness.ts) | The gRPC orchestrator over `@grpc/grpc-js`. Raises a typed `GrpcException` (`code`); handlers take a `GrpcRequest` and return a `GrpcResponse`. |
 
-MIT.
+## 🔗 How it maps to the contract
+
+| Core contract | HTTP | gRPC |
+|---|---|---|
+| `TAddr` | `{ method, path }` | `{ service, method }` |
+| `dispatch` | `onRequest → handler → onResponse` | identical |
+| `ServerException` | `HttpException` (`status`) | `GrpcException` (`code`) |
+
+> [!TIP]
+> Pending: bind `.proto` via `@grpc/proto-loader` + `server.addService`, and
+> streaming RPCs (mirroring the WebSocket model in `xf-server-http`).
+
+## 📚 Documentation
+
+Full specification → **[xfcfam.org](https://xfcfam.org)**
+
+## ⚖️ License
+
+MIT

@@ -37,10 +37,12 @@ import type { GraphQLConfig } from '../../business/transfers/GraphQLConfig.js'
  * ```
  */
 export abstract class GraphQLService extends StatelessService {
+  /** Interaction init — subclasses override to register the GraphQL endpoint via `B.server.graphql(...)`. */
   override async init(): Promise<void> {
     // Subclasses override and call B.server.graphql(this.config()) inside.
   }
 
+  /** Terminate the service. No-op by default. */
   override async terminate(): Promise<void> {}
 
   /**

@@ -1,0 +1,23 @@
+{
+  "name": "@xfcfam-examples/06-logger",
+  "version": "0.0.1",
+  "private": true,
+  "description": "XF artefact: R.logger (console default + JSON format + info policy) plus a rotating file tree over @xfcfam/xf-fs. Logs from the Business, Interaction AND Access layers. Demonstrates @xfcfam/xf-logger + @xfcfam/xf-logger-file.",
+  "type": "module",
+  "scripts": {
+    "prestart": "pnpm --filter @xfcfam/xf --filter @xfcfam/xf-fs --filter @xfcfam/xf-logger --filter @xfcfam/xf-logger-file build",
+    "start": "tsx main.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@xfcfam/xf": "workspace:^",
+    "@xfcfam/xf-fs": "workspace:^",
+    "@xfcfam/xf-logger": "workspace:^",
+    "@xfcfam/xf-logger-file": "workspace:^"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "tsx": "^4.22.4",
+    "@types/node": "^25.9.3"
+  }
+}

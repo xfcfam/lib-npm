@@ -32,10 +32,12 @@ import type { WebSocketConnection, WebSocketHandler } from '../../business/trans
  * ```
  */
 export abstract class WebSocketService extends StatelessService {
+  /** Interaction init — subclasses override to register WebSocket endpoints via `B.server.ws(...)`. */
   override async init(): Promise<void> {
     // Subclasses override and call B.server.ws(path, handler) inside.
   }
 
+  /** Terminate the service. No-op by default. */
   override async terminate(): Promise<void> {}
 
   /**

@@ -1,0 +1,49 @@
+{
+  "name": "@xfcfam/xf-kv",
+  "version": "0.1.0",
+  "description": "Key-value / cache Access Layer Generalization for the XF Architecture Model — transport-agnostic contract. Pair with @xfcfam/xf-kv-redis / @xfcfam/xf-kv-memcached / etc.",
+  "author": "XF Contributors",
+  "license": "MIT",
+  "homepage": "https://xfcfam.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xfcfam/lib-npm",
+    "directory": "packages/xf-kv"
+  },
+  "keywords": [
+    "xf",
+    "cfam",
+    "key-value",
+    "cache",
+    "store"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "@xfcfam/xf": "workspace:^"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
+  }
+}

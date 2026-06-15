@@ -91,8 +91,10 @@ export abstract class FileRepository extends Repository<FileRepoState> {
     })
   }
 
+  /** No-op initialisation; override to add setup, calling `super.init()` first. */
   override async init(): Promise<void> {}
 
+  /** Release every still-active {@link Watcher} and delete every still-open {@link TempFile}. */
   override async terminate(): Promise<void> {
     // Close every still-active watcher.
     for (const w of [...this.state.openWatchers]) {
@@ -289,6 +291,41 @@ export abstract class FileRepository extends Repository<FileRepoState> {
       }
     } catch (err) {
       throw this.translateError(err, abs)
+    }
+  }
+
+  // ─── Copy / move ──────────────────────────────────────────
+
+  /**
+   * Copy `src` to `dest`, overwriting `dest` if it already exists.
+   * Parent directories of `dest` must exist.
+   */
+  async copy(src: string, dest: string): Promise<void> {
+    const absSrc = this.resolve(src)
+    const absDest = this.resolve(dest)
+    try {
+      await fsp.copyFile(absSrc, absDest)
+    } catch (err) {
+      throw this.translateError(err, absSrc)
+    }
+  }
+
+  /**
+   * Move (rename) `src` to `dest`, overwriting `dest` if it exists.
+   * Falls back to copy-then-delete across filesystems (`EXDEV`).
+   */
+  async move(src: string, dest: string): Promise<void> {
+    const absSrc = this.resolve(src)
+    const absDest = this.resolve(dest)
+    try {
+      await fsp.rename(absSrc, absDest)
+    } catch (err) {
+      if (typeof err === 'object' && err !== null && (err as { code?: string }).code === 'EXDEV') {
+        await fsp.copyFile(absSrc, absDest)
+        await fsp.unlink(absSrc)
+        return
+      }
+      throw this.translateError(err, absSrc)
     }
   }
 
