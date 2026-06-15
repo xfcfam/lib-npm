@@ -1,0 +1,21 @@
+{
+  "name": "@xfcfam-examples/04-kv-memory",
+  "version": "0.0.1",
+  "private": true,
+  "description": "XF artefact: an in-memory KeyValueRepository (no server) → Business → Service. Demonstrates @xfcfam/xf-kv end-to-end.",
+  "type": "module",
+  "scripts": {
+    "prestart": "pnpm --filter @xfcfam/xf --filter @xfcfam/xf-kv build",
+    "start": "tsx main.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@xfcfam/xf": "workspace:^",
+    "@xfcfam/xf-kv": "workspace:^"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "tsx": "^4.22.4",
+    "@types/node": "^25.9.3"
+  }
+}

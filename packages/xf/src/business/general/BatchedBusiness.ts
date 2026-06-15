@@ -171,11 +171,18 @@ export abstract class BatchedBusiness<T> extends ScheduleBusiness<BatchState<T>>
     await this.flush('time')
   }
 
+  /**
+   * Starts the age-based flush timer when `maxAgeMs` is configured.
+   */
   override async init(): Promise<void> {
     const ms = this.state.options.maxAgeMs
     if (ms !== undefined && ms > 0) this.interval(ms)
   }
 
+  /**
+   * Cancels the timer and performs one final `'terminate'` flush of any
+   * pending items.
+   */
   override async terminate(): Promise<void> {
     // Cancel the timer first (super.terminate clears it), then drain
     // any remaining pending items in a final flush.
@@ -185,12 +192,20 @@ export abstract class BatchedBusiness<T> extends ScheduleBusiness<BatchState<T>>
 
   // ─── Overridable hooks ────────────────────────────────────
 
+  /** Hook invoked after an item is appended, with the new buffer size. Default no-op. */
   protected onAdd(_item: T, _size: number): void {}
+  /** Hook invoked when the buffer reaches `maxSize`, before the size-triggered flush. Default no-op. */
   protected onBufferFull(_size: number): void {}
+  /** Hook invoked when the age timer fires with pending items, before the time-triggered flush. Default no-op. */
   protected onTimeout(_ageMs: number): void {}
+  /** Hook invoked just before the flush callback runs, with the batch and its trigger reason. Default no-op. */
   protected onFlushStart(_batch: readonly T[], _reason: BatchFlushReason): void {}
+  /** Hook invoked after a flush succeeds, with the batch and its elapsed duration. Default no-op. */
   protected onFlushComplete(_batch: readonly T[], _durationMs: number): void {}
+  /** Hook invoked when the flush callback rejects, with the batch and the error. Default no-op. */
   protected onFlushError(_batch: readonly T[], _error: unknown): void {}
+  /** Hook invoked after {@link clear} discards pending items, with the count dropped. Default no-op. */
   protected onClear(_droppedCount: number): void {}
+  /** Hook invoked whenever the buffer becomes empty. Default no-op. */
   protected onDrain(): void {}
 }

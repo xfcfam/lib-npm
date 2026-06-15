@@ -43,12 +43,14 @@ export abstract class CachedFileRepository extends FileRepository {
     this.bytesCache = new Map()
   }
 
+  /** Clear both caches, then run the base teardown. */
   override async terminate(): Promise<void> {
     this.textCache.clear()
     this.bytesCache.clear()
     await super.terminate()
   }
 
+  /** Read as text, serving a cached copy when available and memoising otherwise. */
   override async read(path: string): Promise<string> {
     const abs = this.resolve(path)
     const cached = this.textCache.get(abs)
@@ -58,6 +60,7 @@ export abstract class CachedFileRepository extends FileRepository {
     return content
   }
 
+  /** Read as bytes, serving a cached copy when available and memoising otherwise. */
   override async readBytes(path: string): Promise<Uint8Array> {
     const abs = this.resolve(path)
     const cached = this.bytesCache.get(abs)
@@ -67,21 +70,25 @@ export abstract class CachedFileRepository extends FileRepository {
     return content
   }
 
+  /** Write, then invalidate the cache entry for the affected path. */
   override async write(path: string, content: string | Uint8Array): Promise<void> {
     await super.write(path, content)
     this.invalidateCache(path)
   }
 
+  /** Append, then invalidate the cache entry for the affected path. */
   override async append(path: string, content: string | Uint8Array): Promise<void> {
     await super.append(path, content)
     this.invalidateCache(path)
   }
 
+  /** Delete, then invalidate the cache entry for the affected path. */
   override async delete(path: string): Promise<void> {
     await super.delete(path)
     this.invalidateCache(path)
   }
 
+  /** Remove a directory, then invalidate the affected cache entries. */
   override async rmdir(path: string, options: { recursive?: boolean } = {}): Promise<void> {
     await super.rmdir(path, options)
     if (options.recursive === true) {
@@ -93,6 +100,19 @@ export abstract class CachedFileRepository extends FileRepository {
     } else {
       this.invalidateCache(path)
     }
+  }
+
+  /** Copy, then invalidate the cache entry for the destination path. */
+  override async copy(src: string, dest: string): Promise<void> {
+    await super.copy(src, dest)
+    this.invalidateCache(dest)
+  }
+
+  /** Move, then invalidate the cache entries for source and destination. */
+  override async move(src: string, dest: string): Promise<void> {
+    await super.move(src, dest)
+    this.invalidateCache(src)
+    this.invalidateCache(dest)
   }
 
   /** Drop the cache entry for a single path. */

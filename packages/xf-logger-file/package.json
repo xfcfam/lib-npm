@@ -1,0 +1,54 @@
+{
+  "name": "@xfcfam/xf-logger-file",
+  "version": "0.1.0",
+  "description": "Rotating file 'tree' for @xfcfam/xf-logger — size + daily rotation over the @xfcfam/xf-fs FileRepository. Plant it into R.logger for durable, rotated file logs.",
+  "author": "XF Contributors",
+  "license": "MIT",
+  "homepage": "https://xfcfam.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xfcfam/lib-npm",
+    "directory": "packages/xf-logger-file"
+  },
+  "keywords": [
+    "xf",
+    "cfam",
+    "logging",
+    "logger",
+    "log",
+    "rotation",
+    "file"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "@xfcfam/xf": "workspace:^",
+    "@xfcfam/xf-logger": "workspace:^",
+    "@xfcfam/xf-fs": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
+  }
+}

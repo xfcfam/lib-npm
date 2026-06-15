@@ -26,7 +26,7 @@ member, published independently to npm. Runnable demos live in
 `examples/`.
 
 The internal layout of every published package follows the canonical
-XF folder structure (`src/<layer>/base|logic|structs|utils/` …).
+XF folder structure (`src/<layer>/general|logic|transfers|utils/` …).
 Please respect it when adding new files — see the existing source
 for the precise placement rules.
 
@@ -73,6 +73,18 @@ state that must survive composition.
 - No `any` in public surface. Inside private helpers it is sometimes
   unavoidable (e.g. the dynamic prototype copying in `ComposableX`)
   and is fine when contained.
+
+## Package READMEs
+
+Every package's `README.md` follows the shared
+[package README template](./.github/PACKAGE_README_TEMPLATE.md): a unified `🧩`
+title, a one-line tagline, a positioning callout, and the `📦 Install` /
+`🚀 Quick start` / `🧰 Exported Components` / `📚 Documentation` / `⚖️ License`
+sections. Under *Exported Components*, list the published components in a table
+**per XF type** (`Generalizations` / `Utilities`), each component **linked to its
+source file** — which carries the JSDoc for every operation. Emojis go on the
+title and the `##` headings only. Copy the skeleton from the template when you add
+a package.
 
 ## Workflow
 

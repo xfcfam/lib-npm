@@ -49,6 +49,7 @@ export abstract class GrpcServerBusiness extends ServerBusiness<GrpcAddress, Grp
 
   // ─── Lifecycle ────────────────────────────────────────────
 
+  /** Start the gRPC server and bind the registered RPCs. */
   override async listen(): Promise<void> {
     // `@grpc/grpc-js` is a direct dependency, lazy-loaded at start.
     const spec: string = '@grpc/grpc-js'
@@ -71,6 +72,7 @@ export abstract class GrpcServerBusiness extends ServerBusiness<GrpcAddress, Grp
     await this.onStarted()
   }
 
+  /** Stop the gRPC server and release the port. */
   override async close(): Promise<void> {
     const server = this.state.server as { tryShutdown?: (cb: (err?: Error) => void) => void } | undefined
     if (server?.tryShutdown !== undefined) {

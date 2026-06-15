@@ -1,0 +1,61 @@
+{
+  "name": "@xfcfam/xf-reactnative-fs",
+  "version": "0.1.0",
+  "description": "React Native filesystem Access Layer Generalization for the XF Architecture Model — the React Native sibling of @xfcfam/xf-fs, same API/methods, backed by @dr.pogodin/react-native-fs.",
+  "author": "XF Contributors",
+  "license": "MIT",
+  "homepage": "https://xfcfam.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xfcfam/lib-npm",
+    "directory": "packages/xf-reactnative-fs"
+  },
+  "keywords": [
+    "xf",
+    "cfam",
+    "filesystem",
+    "fs",
+    "react-native",
+    "files",
+    "io"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "@xfcfam/xf": "workspace:^",
+    "@xfcfam/xf-fs": "workspace:^",
+    "@dr.pogodin/react-native-fs": ">=2.28.0",
+    "react-native": ">=0.73"
+  },
+  "peerDependenciesMeta": {
+    "@xfcfam/xf-fs": {
+      "optional": false
+    }
+  },
+  "devDependencies": {
+    "@xfcfam/xf-fs": "workspace:^",
+    "@dr.pogodin/react-native-fs": "^2.28.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
+  }
+}

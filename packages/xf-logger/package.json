@@ -1,0 +1,50 @@
+{
+  "name": "@xfcfam/xf-logger",
+  "version": "0.1.0",
+  "description": "Logging Access Layer Generalization for the XF Architecture Model — console-default logger with overridable format/policy and pluggable Business 'trees' for multiplexing. Pair with @xfcfam/xf-logger-file for rotating file output.",
+  "author": "XF Contributors",
+  "license": "MIT",
+  "homepage": "https://xfcfam.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xfcfam/lib-npm",
+    "directory": "packages/xf-logger"
+  },
+  "keywords": [
+    "xf",
+    "cfam",
+    "logging",
+    "logger",
+    "log"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "@xfcfam/xf": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
+  }
+}

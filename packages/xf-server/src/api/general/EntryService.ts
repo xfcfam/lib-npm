@@ -22,10 +22,12 @@ import type { Handler } from '../../business/transfers/Handler.js'
  * @typeParam TRes  Protocol-specific response type (e.g. `HttpResponse`).
  */
 export abstract class EntryService<TReq, TRes> extends StatelessService {
+  /** Interaction init — subclasses override to push their handlers onto `B.server`. */
   override async init(): Promise<void> {
     // Subclasses override and push their handlers to B.server inside.
   }
 
+  /** Terminate the service. No-op by default. */
   override async terminate(): Promise<void> {}
 
   /**

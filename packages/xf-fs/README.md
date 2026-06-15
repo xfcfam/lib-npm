@@ -1,107 +1,57 @@
-# `@xfcfam/xf-fs`
+# 🧩 `@xfcfam/xf-fs`
 
-Filesystem Access Layer Generalization for the **XF Architecture
-Model** — encapsulates `node:fs` behind a coherent, XF-compliant API.
+> Filesystem Access Generalization for the **XF Architecture Model** — `node:fs`
+> behind one coherent, XF-compliant `FileRepository`.
 
-`xf-fs` is the canonical wrapper that lets an XF artefact talk to
-the local filesystem without ever importing `node:fs` directly. It
-follows the same shape as `@xfcfam/xf-rest` (HTTP protocol) and
-`@xfcfam/xf-sql` (SQL protocol): one Generalization per protocol of
-access, with cross-cutting variants for caching and audit.
+> [!NOTE]
+> For React Native, [`@xfcfam/xf-reactnative-fs`](https://www.npmjs.com/package/@xfcfam/xf-reactnative-fs)
+> exposes the **same API** (and re-uses these Transfer types) over the device
+> filesystem instead of `node:fs`.
 
-## What it provides
-
-| Component | Purpose |
-| --- | --- |
-| `FileRepository` | Generalization. Wraps `node:fs`: read/write/append/delete/exists/stat, list/walk, mkdir/rmdir, streaming, watch, temp files. Concrete components extend it for their domain. |
-| `CachedFileRepository` | Same protocol; adds an in-memory cache for `read`/`readBytes` with write-through invalidation. |
-| `AuditedFileRepository` | Same protocol; adds overridable `onRead` / `onWrite` / `onDelete` / `onError` / … hooks for audit logs, metrics, tracing. |
-| `FileEntry`, `FileStat`, `WatchEvent`, `Watcher`, `TempFile` | Transfer objects modelling directory entries, metadata, change events, watch handles, and temp-file handles. |
-| `FileNotFoundException`, `FileAccessDeniedException`, `DirectoryNotEmptyException` | Typed Exceptions for the three modelled failure modes. Other failures propagate as native `Error`. |
-| `PathUtils`, `EncodingUtils` | Pure helpers — path manipulation (`join` / `normalize` / `relative` / …) and BOM-aware UTF-8 encoding. |
-
-## Install
+## 📦 Install
 
 ```bash
-pnpm add @xfcfam/xf-fs @xfcfam/xf
+npm i @xfcfam/xf @xfcfam/xf-fs
 ```
 
-`@xfcfam/xf` is a peer dependency.
-
-## Quick start
+## 🚀 Quick start
 
 ```ts
 import { FileRepository } from '@xfcfam/xf-fs'
 
-interface User { id: string; name: string }
-
 export class UsersFileRepository extends FileRepository {
   constructor() { super({ rootPath: '/var/data/users' }) }
-
-  async findById(id: string): Promise<User> {
-    const text = await this.read(`${id}.json`)
-    return JSON.parse(text) as User
-  }
-
-  async save(user: User): Promise<void> {
-    await this.write(`${user.id}.json`, JSON.stringify(user))
-  }
+  async findById(id: string) { return JSON.parse(await this.read(`${id}.json`)) }
+  async save(u: User) { await this.write(`${u.id}.json`, JSON.stringify(u)) }
 }
 ```
 
-Inject it into the artefact's Access Layer injection `R`:
+## 🧰 Exported Components
 
-```ts
-import { UsersFileRepository } from './repository/logic/UsersFileRepository.js'
+### Generalizations
 
-export class R {
-  private constructor() {}
-  static readonly usersFileRepository = new UsersFileRepository()
-  static async init()      { await R.usersFileRepository.init() }
-  static async terminate() { await R.usersFileRepository.terminate() }
-}
-```
+| Component | Description |
+|---|---|
+| [`FileRepository`](./src/repository/general/FileRepository.ts) | The whole local-filesystem protocol over `node:fs`. Returns `FileStat` / `FileEntry`, hands back `Watcher` / `TempFile` handles, and raises typed `FileNotFoundException` / `FileAccessDeniedException` / `DirectoryNotEmptyException`. |
+| [`CachedFileRepository`](./src/repository/general/CachedFileRepository.ts) | Adds a write-through in-memory cache over `read` / `readBytes`. |
+| [`AuditedFileRepository`](./src/repository/general/AuditedFileRepository.ts) | Adds an observability policy — every operation fires a hook. |
 
-## Generalizations by protocol, not by feature
+### Utilities
 
-xf-fs deliberately exposes **one** `FileRepository` covering the
-entire local-filesystem protocol (read, write, list, watch, stream,
-temp). Variants subclass `FileRepository` only when they add a
-**cross-cutting policy** over the same protocol:
+| Component | Description |
+|---|---|
+| [`PathUtils`](./src/repository/utils/PathUtils.ts) | Pure POSIX path manipulation. |
+| [`EncodingUtils`](./src/repository/utils/EncodingUtils.ts) | BOM-aware UTF-8 encoding helpers. |
 
-- `CachedFileRepository` adds *caching* (still the same protocol).
-- `AuditedFileRepository` adds *observability* (still the same
-  protocol).
+> [!TIP]
+> Three filesystem errors become typed exceptions —
+> `FileNotFoundException` ← `ENOENT`, `FileAccessDeniedException` ← `EACCES`/`EPERM`,
+> `DirectoryNotEmptyException` ← `ENOTEMPTY`. Anything else propagates as native `Error`.
 
-Other protocols of access (S3, FTP, in-memory virtual FS) would land
-in their own packages (`@xfcfam/xf-fs-s3`, `@xfcfam/xf-fs-memory`, …)
-exposing their own `FileRepository` subclass — the consumer picks
-the implementation that matches its environment, the API stays
-uniform.
+## 📚 Documentation
 
-## Resource lifecycle
+Full specification → **[xfcfam.org](https://xfcfam.org)**
 
-`Watcher` and `TempFile` are Transfers that wrap an OS handle. The
-caller owns them and should call `.close()` when done. As a safety
-net, `FileRepository.terminate()` closes every still-active watcher
-and deletes every still-open temp file — so even a careless caller
-won't leak handles on shutdown.
+## ⚖️ License
 
-## Error model
-
-Three filesystem errors are translated into typed XF Exceptions
-because they have **clear domain meaning**:
-
-- `FileNotFoundException` ← `ENOENT`
-- `FileAccessDeniedException` ← `EACCES` / `EPERM`
-- `DirectoryNotEmptyException` ← `ENOTEMPTY`
-
-Anything else propagates as the native `Error` raised by `node:fs`.
-This is consistent with the XF doctrine: native runtime exceptions
-are well-formed transfer vehicles (like `String`, `Date`, `Promise`),
-and a custom Exception is justified only when it represents a
-concept of the artefact's domain.
-
-## License
-
-MIT.
+MIT

@@ -1,0 +1,54 @@
+{
+  "name": "@xfcfam/xf-kv-redis",
+  "version": "0.1.0",
+  "description": "Redis adapter for @xfcfam/xf-kv — implements the key-value / cache Access contract over ioredis.",
+  "author": "XF Contributors",
+  "license": "MIT",
+  "homepage": "https://xfcfam.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xfcfam/lib-npm",
+    "directory": "packages/xf-kv-redis"
+  },
+  "keywords": [
+    "xf",
+    "cfam",
+    "key-value",
+    "cache",
+    "redis",
+    "ioredis"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "ioredis": "^5.4.0"
+  },
+  "peerDependencies": {
+    "@xfcfam/xf": "workspace:^",
+    "@xfcfam/xf-kv": "workspace:^"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
+  }
+}

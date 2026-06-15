@@ -126,6 +126,7 @@ export abstract class RestRepository extends Repository<null> {
     this.client = ky.create(opts)
   }
 
+  /** Discard the internal `ky` HTTP client, releasing it for GC. */
   async terminate(): Promise<void> {
     this.client = undefined
   }

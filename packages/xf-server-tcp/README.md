@@ -1,47 +1,56 @@
-# `@xfcfam/xf-server-tcp` — sketch
+# 🧩 `@xfcfam/xf-server-tcp`
 
-Raw TCP transport for the **XF Architecture Model**, over Node's
-built-in [`node:net`](https://nodejs.org/api/net.html) (zero external
-dependencies). Implements the [`@xfcfam/xf-server`](../xf-server)
-contract.
+> Raw TCP transport for the **XF Architecture Model** over
+> [`node:net`](https://nodejs.org/api/net.html) (zero external deps) — the
+> [`@xfcfam/xf-server`](https://www.npmjs.com/package/@xfcfam/xf-server) contract.
 
-> **Status: sketch — and a deliberate boundary case.**
+> [!WARNING]
+> **Status: sketch — and a deliberate boundary case.** TCP is
+> connection-oriented with no addressing, so it does *not* match the core's
+> request → response model. It reuses only the universal **lifecycle** and bypasses
+> the pipeline.
 
-## Why it's a boundary case
+## 📦 Install
 
-TCP is **connection-oriented** (a bidirectional byte stream) and has
-**no addressing** (one listener for the whole port). That does *not*
-match the core's request → response, address-routed model. So TCP reuses
-only the part of the contract that is genuinely universal — the
-**lifecycle** — and bypasses the rest:
+```bash
+npm i @xfcfam/xf @xfcfam/xf-server @xfcfam/xf-server-tcp
+```
 
-| Core contract | Used by TCP? |
-| --- | --- |
-| Lifecycle (`init` → `listen` → `close` / `terminate`, `onStarted` / `onStopped`) | ✅ yes |
-| Address registry (`Route<TAddr>`) | ⚠️ degenerate — single handler, address `null` |
-| `dispatch` pipeline (`onRequest → handler → onResponse`) | ❌ bypassed — no request/response |
+## 🚀 Shape
 
-This is the useful outcome of the sketch: it confirms the core is
-**request/response-server shaped**, and that raw sockets sit at its
-edge. If TCP/UDP ever warrant first-class support, the cleaner home is a
-thinner `xf-socket-*` base rather than stretching `xf-server`.
-
-## Shape
-
-```typescript
+```ts
 import { TcpServerBusiness, type TcpConnection } from '@xfcfam/xf-server-tcp'
 
 export class EchoServer extends TcpServerBusiness {
   constructor() { super({ port: 9000 }) }
 }
-
-// Register the single connection handler:
-B.server.connection((conn: TcpConnection) => {
-  conn.onData((chunk) => conn.send(chunk))   // echo
-  conn.onClose(() => console.log('bye'))
-})
+B.server.connection((conn: TcpConnection) => conn.onData((c) => conn.send(c))) // echo
 ```
 
-## License
+## 🧰 Exported Components
 
-MIT.
+### Generalizations
+
+| Component | Description |
+|---|---|
+| [`TcpServerBusiness`](./src/business/general/TcpServerBusiness.ts) | The raw-TCP orchestrator over `node:net`. A handler receives a `TcpConnection` (`onData` / `send` / `onClose`); reuses only the lifecycle (see below). |
+
+## 🔗 What maps
+
+| Core contract | TCP |
+|---|---|
+| Lifecycle (`init` → `listen` → `close`) | yes |
+| Address registry | degenerate — single handler, address `null` |
+| `dispatch` pipeline | bypassed — no request/response |
+
+> [!TIP]
+> The useful outcome of the sketch: it confirms the core is request/response-shaped,
+> and that raw sockets belong in a thinner `xf-socket-*` base, not here.
+
+## 📚 Documentation
+
+Full specification → **[xfcfam.org](https://xfcfam.org)**
+
+## ⚖️ License
+
+MIT
