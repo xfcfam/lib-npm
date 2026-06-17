@@ -1,6 +1,6 @@
 {
   "name": "@xfcfam/xf-reactnative-fs",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "description": "React Native filesystem Access Layer Generalization for the XF Architecture Model — the React Native sibling of @xfcfam/xf-fs, same API/methods, backed by @dr.pogodin/react-native-fs.",
   "author": "XF Contributors",
   "license": "MIT",
