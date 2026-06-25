@@ -4,13 +4,17 @@
  *
  * Encapsulates the `ky` HTTP client behind a single XF-canonical
  * Generalization (`RestRepository`), three Transfer objects
- * (`Request`, `RestException`, `ConnectionException`), and two static
- * utility classes (`ParseUtils`, `ReviverUtils`).
+ * (`Request`, `RestException`, `ConnectionException`), and three static
+ * utility classes (`ParseUtils`, `SerializeUtils`, `ReviverUtils`).
  *
- * Out of the box xf-rest handles `application/json` (including
- * `*+json` variants) and `text/*` responses. XML, CSV, MessagePack
- * and other formats are supported by registering a `Parser` in
- * `RestOptions.parsers`.
+ * The transport is content-type agnostic. Responses: out of the box
+ * `application/json` (including `*+json`) and `text/*` are handled;
+ * register a `Parser` in `RestOptions.parsers` for XML, CSV, etc.
+ * Requests: a plain object/array defaults to JSON, while a
+ * `URLSearchParams`, `FormData`, `Blob`, typed array, string or stream
+ * is sent verbatim, and an explicit `Content-Type` selects a built-in
+ * (form/text) or user `Serializer` registered in
+ * `RestOptions.serializers`.
  *
  * `@xfcfam/xf` is declared as a peer dependency: the consumer's
  * project must add **both** `@xfcfam/xf` and `@xfcfam/xf-rest` to its
@@ -32,5 +36,7 @@ export { ConnectionException } from './src/repository/transfers/ConnectionExcept
 // ── Access — utils ────────────────────────────────────────
 export { ParseUtils } from './src/repository/utils/ParseUtils.js'
 export type { Parser } from './src/repository/utils/ParseUtils.js'
+export { SerializeUtils } from './src/repository/utils/SerializeUtils.js'
+export type { Serializer } from './src/repository/utils/SerializeUtils.js'
 export { ReviverUtils } from './src/repository/utils/ReviverUtils.js'
 export type { Reviver } from './src/repository/utils/ReviverUtils.js'

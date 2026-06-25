@@ -4,6 +4,7 @@ import type { Request } from '../transfers/Request.js'
 import { RestException } from '../transfers/RestException.js'
 import { ConnectionException } from '../transfers/ConnectionException.js'
 import { ParseUtils, type Parser } from '../utils/ParseUtils.js'
+import { SerializeUtils, type Serializer } from '../utils/SerializeUtils.js'
 import { ReviverUtils, type Reviver } from '../utils/ReviverUtils.js'
 
 /**
@@ -37,6 +38,14 @@ export interface RestOptions {
    * the built-in JSON / text routing.
    */
   parsers?: Record<string, Parser>
+  /**
+   * Content-Type → {@link Serializer} map for outbound request bodies.
+   * The request-side mirror of {@link parsers}. Keys are matched
+   * case-insensitively against the media type of the request's explicit
+   * `Content-Type` header. User entries override the built-in form /
+   * text serializers, letting the Repository speak any wire format.
+   */
+  serializers?: Record<string, Serializer>
   /**
    * Reviver applied to the parsed response (and to parsed error
    * bodies). Walks the value tree depth-first. Combine
@@ -169,7 +178,7 @@ export abstract class RestRepository extends Repository<null> {
     const kyOpts: KyOptions = { method: req.method }
     if (req.headers !== undefined) kyOpts.headers = req.headers
     if (req.query !== undefined) kyOpts.searchParams = this.serializeQuery(req.query)
-    if (req.body !== undefined) kyOpts.json = req.body
+    if (req.body !== undefined) await this.encodeBody(req, kyOpts)
 
     try {
       const response = await this.client(path, kyOpts)
@@ -188,6 +197,47 @@ export abstract class RestRepository extends Repository<null> {
       if (v !== undefined) out[k] = String(v)
     }
     return out
+  }
+
+  /**
+   * Encode the request body onto `kyOpts`, agnostic to the wire format.
+   *
+   * Resolution order:
+   *   1. If the request carries an explicit `Content-Type` header and a
+   *      matching {@link Serializer} exists (built-in form/text, or a
+   *      user entry in `RestOptions.serializers`), use it and send via
+   *      `ky`'s raw `body` channel.
+   *   2. Else, if the body is already a transport-ready value
+   *      (`URLSearchParams`, `FormData`, `Blob`, a typed array, a
+   *      string, a stream), pass it straight through `body`; `fetch`
+   *      infers the Content-Type.
+   *   3. Else (a plain object/array, no special Content-Type) fall back
+   *      to JSON via `ky`'s `json` channel — the historical default.
+   */
+  private async encodeBody(req: Request, kyOpts: KyOptions): Promise<void> {
+    const contentType = this.headerValue(req.headers, 'content-type')
+    const serializer =
+      contentType !== undefined
+        ? SerializeUtils.pickSerializer(contentType, this.options.serializers ?? {})
+        : undefined
+
+    if (serializer !== undefined) {
+      kyOpts.body = await serializer(req.body)
+    } else if (SerializeUtils.isEncoded(req.body)) {
+      kyOpts.body = req.body
+    } else {
+      kyOpts.json = req.body
+    }
+  }
+
+  /** Case-insensitive lookup of a single request header value. */
+  private headerValue(headers: Request['headers'], name: string): string | undefined {
+    if (headers === undefined) return undefined
+    const lower = name.toLowerCase()
+    for (const key of Object.keys(headers)) {
+      if (key.toLowerCase() === lower) return headers[key]
+    }
+    return undefined
   }
 
   private async parseResponseBody(response: Response): Promise<unknown> {

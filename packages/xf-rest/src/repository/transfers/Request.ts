@@ -24,6 +24,13 @@ export interface Request {
   query?: Record<string, string | number | boolean | undefined>
   /** Per-request headers. Merged on top of `defaultHeaders`. */
   headers?: Record<string, string>
-  /** Request body. Serialised as JSON. */
+  /**
+   * Request body. Encoded according to the request's `Content-Type`
+   * and the body's runtime type (see `SerializeUtils`): a plain
+   * object/array defaults to JSON; a `URLSearchParams`, `FormData`,
+   * `Blob`, typed array, string or stream is sent as-is; an explicit
+   * `Content-Type` (e.g. `application/x-www-form-urlencoded`) selects
+   * the matching serializer.
+   */
   body?: unknown
 }

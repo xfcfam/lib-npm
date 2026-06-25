@@ -44,12 +44,28 @@ export class UsersRest extends RetryRestRepository {
 
 | Component | Description |
 |---|---|
-| [`ParseUtils`](./src/repository/utils/ParseUtils.ts) | Content-type → parser routing (JSON, `*+json`, `text/*`). |
+| [`ParseUtils`](./src/repository/utils/ParseUtils.ts) | Response content-type → parser routing (JSON, `*+json`, `text/*`). |
+| [`SerializeUtils`](./src/repository/utils/SerializeUtils.ts) | Request content-type → serializer routing (`form`, `text/*`); `isEncoded` for transport-ready bodies. |
 | [`ReviverUtils`](./src/repository/utils/ReviverUtils.ts) | JSON revivers — ISO-8601 strings → `Date`, composable. |
 
 > [!TIP]
 > xf-rest stays lean — no XML/CSV libraries bundled. Register your own parser in
 > `RestOptions.parsers`; the same pipeline parses the body of a `RestException` too.
+
+> [!NOTE]
+> The transport is content-type **agnostic**. A plain object defaults to JSON, but a
+> `URLSearchParams` / `FormData` / `Blob` / typed array / string / stream is sent as-is,
+> and an explicit request `Content-Type` selects a built-in (form / `text/*`) or a custom
+> `Serializer` registered in `RestOptions.serializers` — the request-side mirror of `parsers`.
+>
+> ```ts
+> // OAuth token request as application/x-www-form-urlencoded
+> await this.call({
+>   method: 'POST', path: '/oauth/token',
+>   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+>   body: new URLSearchParams({ grant_type: 'client_credentials' }),
+> })
+> ```
 
 ## 📚 Documentation
 
