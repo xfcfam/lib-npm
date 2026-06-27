@@ -1,5 +1,6 @@
 import { Repository, NotInitializedException } from '@xfcfam/xf'
-import { Kysely, type Dialect } from 'kysely'
+import { Kysely, sql, type Dialect } from 'kysely'
+import type { Filters, PageOptions, Pagination, Primitive } from '../transfers/Crud.js'
 
 /**
  * Configuration accepted by {@link DatabaseRepository}'s constructor.
@@ -201,6 +202,194 @@ export abstract class DatabaseRepository<Schema = unknown> extends Repository<nu
       await this.onError('exec', err)
       throw this.translateError(err)
     }
+  }
+
+  // ─── Built-in CRUD operations ─────────────────────────────
+  //
+  // A stringly-typed convenience surface (table name + filter objects)
+  // built on top of `this.db` — the data-layer analogue of
+  // `RestRepository`'s verb helpers (`get` / `post` / …) over `call`.
+  // It does NOT require the typed `Schema`, so a subclass can use it
+  // with `Schema = unknown`; the typed `this.db` remains available for
+  // bespoke queries (joins, window functions, vector search, …).
+  // All operations route through `exec()` for error translation.
+
+  /** Fetch a single row by primary key. `undefined` if not found. */
+  async findById<T = any>(table: string, id: Primitive, idColumn = 'id'): Promise<T | undefined> {
+    return this.exec(async () =>
+      (await this.crud.selectFrom(table).selectAll().where(idColumn, '=', id as any).executeTakeFirst()) as T | undefined)
+  }
+
+  /** Fetch the first row matching the filters. `undefined` if none. */
+  async findOne<T = any>(table: string, filters?: Filters): Promise<T | undefined> {
+    return this.exec(async () =>
+      (await this.filter(this.crud.selectFrom(table).selectAll(), filters).limit(1).executeTakeFirst()) as T | undefined)
+  }
+
+  /** Fetch all rows matching the filters (all rows when no filters). */
+  async find<T = any>(table: string, filters?: Filters): Promise<T[]> {
+    return this.exec(async () =>
+      (await this.filter(this.crud.selectFrom(table).selectAll(), filters).execute()) as T[])
+  }
+
+  /** Insert one row and return it. */
+  async insert<T = any>(table: string, values: Record<string, unknown>): Promise<T> {
+    return this.exec(async () =>
+      (await this.crud.insertInto(table).values(values).returningAll().executeTakeFirstOrThrow()) as T)
+  }
+
+  /** Insert many rows and return them. Empty input is a no-op (`[]`). */
+  async insertMany<T = any>(table: string, values: ReadonlyArray<Record<string, unknown>>): Promise<T[]> {
+    if (values.length === 0) return []
+    return this.exec(async () =>
+      (await this.crud.insertInto(table).values(values as any).returningAll().execute()) as T[])
+  }
+
+  /** Update a single row by primary key and return it. */
+  async update<T = any>(table: string, id: Primitive, patch: Record<string, unknown>, idColumn = 'id'): Promise<T> {
+    return this.exec(async () =>
+      (await this.crud.updateTable(table).set(patch).where(idColumn, '=', id as any).returningAll().executeTakeFirstOrThrow()) as T)
+  }
+
+  /** Update every row matching the filters and return them. */
+  async updateMany<T = any>(table: string, filters: Filters, patch: Record<string, unknown>): Promise<T[]> {
+    return this.exec(async () =>
+      (await this.filter(this.crud.updateTable(table).set(patch), filters).returningAll().execute()) as T[])
+  }
+
+  /** Delete a single row by primary key and return it. */
+  async delete<T = any>(table: string, id: Primitive, idColumn = 'id'): Promise<T> {
+    return this.exec(async () =>
+      (await this.crud.deleteFrom(table).where(idColumn, '=', id as any).returningAll().executeTakeFirstOrThrow()) as T)
+  }
+
+  /** Delete every row matching the filters and return them. */
+  async deleteMany<T = any>(table: string, filters: Filters): Promise<T[]> {
+    return this.exec(async () =>
+      (await this.filter(this.crud.deleteFrom(table), filters).returningAll().execute()) as T[])
+  }
+
+  /** Whether any row matches the filters. */
+  async exists(table: string, filters?: Filters): Promise<boolean> {
+    return this.exec(async () => {
+      const row = await this.filter(this.crud.selectFrom(table).select(sql`1`.as('exists')), filters).limit(1).executeTakeFirst()
+      return row !== undefined
+    })
+  }
+
+  /** Count the rows matching the filters. */
+  async count(table: string, filters?: Filters): Promise<number> {
+    return this.exec(async () => {
+      const row: any = await this.filter(this.crud.selectFrom(table).select((eb: any) => eb.fn.countAll().as('count')), filters).executeTakeFirst()
+      return Number(row?.count ?? 0)
+    })
+  }
+
+  /** Project a single column to an array of its values. */
+  async pluck<V = Primitive>(table: string, column: string, filters?: Filters): Promise<V[]> {
+    return this.exec(async () => {
+      const rows: any[] = await this.filter(this.crud.selectFrom(table).select(column), filters).execute()
+      return rows.map((r) => r[column]) as V[]
+    })
+  }
+
+  /** Build a `{ key: value }` map from two columns. Last wins on duplicate keys. */
+  async keymap<V = any>(table: string, key: string, value: string, filters?: Filters): Promise<Record<string, V>> {
+    return this.exec(async () => {
+      const rows: any[] = await this.filter(this.crud.selectFrom(table).select([key, value]), filters).execute()
+      const out: Record<string, V> = {}
+      for (const r of rows) out[String(r[key])] = r[value]
+      return out
+    })
+  }
+
+  /** Build a `{ key: value[] }` map grouping `value`s by `key`. */
+  async group<V = any>(table: string, key: string, value: string, filters?: Filters): Promise<Record<string, V[]>> {
+    return this.exec(async () => {
+      const rows: any[] = await this.filter(this.crud.selectFrom(table).select([key, value]), filters).execute()
+      const out: Record<string, V[]> = {}
+      for (const r of rows) (out[String(r[key])] ??= []).push(r[value])
+      return out
+    })
+  }
+
+  /** Fetch a page of rows plus the unpaged total. */
+  async paginate<T = any>(table: string, options: PageOptions): Promise<Pagination<T>> {
+    const size = options.size ?? 20
+    const page = options.page ?? 0
+    return this.exec(async () => {
+      const pageQuery = this.filter(
+        this.crud.selectFrom(table).selectAll().orderBy(options.orderBy, options.direction ?? 'asc').limit(size).offset(page * size),
+        options.filters,
+      ).execute()
+      const countQuery = this.filter(
+        this.crud.selectFrom(table).select((eb: any) => eb.fn.countAll().as('count')),
+        options.filters,
+      ).executeTakeFirst()
+      const [elements, countRow] = await Promise.all([pageQuery, countQuery])
+      return { total: Number((countRow as any)?.count ?? 0), elements: elements as T[] }
+    })
+  }
+
+  /** Call a SQL table function (`SELECT * FROM fn(args)`) and return the rows. */
+  async run<T = any>(fn: string, params: ReadonlyArray<unknown> = []): Promise<T[]> {
+    return this.exec(async () => {
+      const args = sql.join(params.map((p) => sql`${p}`))
+      const result = await sql<T>`select * from ${sql.ref(fn)}(${args})`.execute(this.crud)
+      return result.rows as T[]
+    })
+  }
+
+  /** Run raw SQL (positional `$1…$n` parameters, repeats allowed) and return the rows. */
+  async query<T = any>(rawSql: string, params: ReadonlyArray<unknown> = []): Promise<T[]> {
+    return this.exec(async () => {
+      const result = await this.bindRaw(rawSql, params).execute(this.crud)
+      return result.rows as T[]
+    })
+  }
+
+  /** Run raw SQL and return the first value of the first row (or `undefined`). */
+  async scalar<V = Primitive>(rawSql: string, params: ReadonlyArray<unknown> = []): Promise<V | undefined> {
+    return this.exec(async () => {
+      const result = await this.bindRaw(rawSql, params).execute(this.crud)
+      const row = result.rows[0] as Record<string, unknown> | undefined
+      if (row === undefined) return undefined
+      return Object.values(row)[0] as V
+    })
+  }
+
+  /** Untyped Kysely handle for the dynamic CRUD helpers. */
+  private get crud(): Kysely<any> {
+    return this.db as unknown as Kysely<any>
+  }
+
+  /** Chain equality filters onto a query builder. */
+  private filter<QB>(qb: QB, filters?: Filters): QB {
+    if (filters === undefined) return qb
+    let out: any = qb
+    for (const [col, val] of Object.entries(filters)) {
+      if (val === null) out = out.where(col, 'is', null)
+      else if (Array.isArray(val)) out = val.length === 0 ? out.where(sql`1 = 0`) : out.where(col, 'in', val)
+      else out = out.where(col, '=', val)
+    }
+    return out as QB
+  }
+
+  /** Turn a raw `$n`-parameterised SQL string into a Kysely bound `sql` fragment. */
+  private bindRaw(rawSql: string, params: ReadonlyArray<unknown>) {
+    const strings: string[] = []
+    const values: unknown[] = []
+    let last = 0
+    const re = /\$(\d+)/g
+    let m: RegExpExecArray | null
+    while ((m = re.exec(rawSql)) !== null) {
+      strings.push(rawSql.slice(last, m.index))
+      values.push(params[Number(m[1]) - 1])
+      last = m.index + m[0].length
+    }
+    strings.push(rawSql.slice(last))
+    const fragments = Object.assign([...strings], { raw: [...strings] }) as unknown as TemplateStringsArray
+    return sql(fragments, ...values)
   }
 
   // ─── Overridable observation hooks ────────────────────────

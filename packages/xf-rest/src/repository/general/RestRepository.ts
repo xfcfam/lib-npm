@@ -1,6 +1,7 @@
 import { Repository, NotInitializedException } from '@xfcfam/xf'
 import ky, { HTTPError, TimeoutError, type KyInstance, type Options as KyOptions } from 'ky'
 import type { Request } from '../transfers/Request.js'
+import type { HttpResponse } from '../transfers/HttpResponse.js'
 import { RestException } from '../transfers/RestException.js'
 import { ConnectionException } from '../transfers/ConnectionException.js'
 import { ParseUtils, type Parser } from '../utils/ParseUtils.js'
@@ -140,32 +141,39 @@ export abstract class RestRepository extends Repository<null> {
     this.client = undefined
   }
 
-  /** Issue a `GET` request. */
-  async get<R = unknown>(path: string, query?: Request['query'], headers?: Request['headers']): Promise<R> {
+  /** Issue a `GET` request. Returns the complete {@link HttpResponse}. */
+  async get<R = unknown>(path: string, query?: Request['query'], headers?: Request['headers']): Promise<HttpResponse<R>> {
     return this.call<R>({ method: 'GET', path, ...(query !== undefined ? { query } : {}), ...(headers !== undefined ? { headers } : {}) })
   }
 
-  /** Issue a `POST` request with optional JSON body. */
-  async post<R = unknown>(path: string, body?: unknown, headers?: Request['headers']): Promise<R> {
+  /** Issue a `POST` request with optional body. Returns the complete {@link HttpResponse}. */
+  async post<R = unknown>(path: string, body?: unknown, headers?: Request['headers']): Promise<HttpResponse<R>> {
     return this.call<R>({ method: 'POST', path, ...(body !== undefined ? { body } : {}), ...(headers !== undefined ? { headers } : {}) })
   }
 
-  /** Issue a `PUT` request with optional JSON body. */
-  async put<R = unknown>(path: string, body?: unknown, headers?: Request['headers']): Promise<R> {
+  /** Issue a `PUT` request with optional body. Returns the complete {@link HttpResponse}. */
+  async put<R = unknown>(path: string, body?: unknown, headers?: Request['headers']): Promise<HttpResponse<R>> {
     return this.call<R>({ method: 'PUT', path, ...(body !== undefined ? { body } : {}), ...(headers !== undefined ? { headers } : {}) })
   }
 
-  /** Issue a `DELETE` request. Named `del` because `delete` is a reserved word. */
-  async del<R = unknown>(path: string, headers?: Request['headers']): Promise<R> {
+  /** Issue a `DELETE` request. Named `del` because `delete` is a reserved word. Returns the complete {@link HttpResponse}. */
+  async del<R = unknown>(path: string, headers?: Request['headers']): Promise<HttpResponse<R>> {
     return this.call<R>({ method: 'DELETE', path, ...(headers !== undefined ? { headers } : {}) })
   }
 
   /**
-   * Issue a fully-described {@link Request}. The base helpers
-   * ({@link get}, {@link post}, {@link put}, {@link del}) all funnel
-   * through this method.
+   * Issue a fully-described {@link Request} and return the complete
+   * {@link HttpResponse} (`status` / `headers` / `body`) — the client-side
+   * counterpart of `@xfcfam/xf-server-http`'s `HttpResponse`. The verb
+   * helpers ({@link get}, {@link post}, {@link put}, {@link del}) all
+   * funnel through this method.
+   *
+   * On a 2xx response `body` is the parsed value (header-based parsing by
+   * `Content-Type`), or the raw `ReadableStream<Uint8Array>` when
+   * `request.stream === true`. A non-2xx response is raised as a
+   * {@link RestException} (carrying the same `status` / `headers` / `body`).
    */
-  async call<R = unknown>(request: Request): Promise<R> {
+  async call<R = unknown>(request: Request): Promise<HttpResponse<R>> {
     if (this.client === undefined) {
       throw new NotInitializedException('RestRepository: init() was not called')
     }
@@ -183,12 +191,22 @@ export abstract class RestRepository extends Repository<null> {
     try {
       const response = await this.client(path, kyOpts)
       if (this.options.onResponse !== undefined) await this.options.onResponse(response, req)
-      return (await this.parseResponseBody(response)) as R
+      const body = req.stream === true
+        ? (response.body as unknown) // raw ReadableStream<Uint8Array> | null — not buffered/parsed
+        : await this.parseResponseBody(response)
+      return { status: response.status, headers: this.collectHeaders(response.headers), body: body as R }
     } catch (err) {
       const translated = await this.translateError(err, req)
       if (this.options.onError !== undefined) await this.options.onError(translated)
       throw translated
     }
+  }
+
+  /** Collect a `Headers` object into a plain lowercased-key record. */
+  private collectHeaders(headers: Headers): Record<string, string> {
+    const out: Record<string, string> = {}
+    headers.forEach((value, key) => { out[key] = value })
+    return out
   }
 
   private serializeQuery(query: NonNullable<Request['query']>): Record<string, string> {
@@ -261,7 +279,13 @@ export abstract class RestRepository extends Repository<null> {
       if (body !== undefined && this.options.reviver !== undefined) {
         body = ReviverUtils.walkReviver(body, this.options.reviver)
       }
-      return new RestException(err.response.status, err.response.statusText, body, req)
+      return new RestException(
+        err.response.status,
+        err.response.statusText,
+        this.collectHeaders(err.response.headers),
+        body,
+        req,
+      )
     }
     if (err instanceof TimeoutError) {
       return new ConnectionException(err, req, 'timeout')

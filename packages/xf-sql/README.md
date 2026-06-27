@@ -37,7 +37,7 @@ export class UsersDb extends TransactionalDatabaseRepository<Schema> {
 
 | Component | Description |
 |---|---|
-| [`DatabaseRepository<Schema>`](./src/repository/general/DatabaseRepository.ts) | The SQL contract over Kysely. `exec()` funnels driver errors through `translateError` into the typed `DatabaseException` family — `Connection` / `UniqueViolation` / `ForeignKeyViolation` / `CheckViolation` / `NotNullViolation` / `Deadlock`. |
+| [`DatabaseRepository<Schema>`](./src/repository/general/DatabaseRepository.ts) | The SQL contract over Kysely (`this.db`). `exec()` funnels driver errors through `translateError` into the typed `DatabaseException` family — `Connection` / `UniqueViolation` / `ForeignKeyViolation` / `CheckViolation` / `NotNullViolation` / `Deadlock`. Plus a stringly-typed **built-in CRUD** surface (no `Schema` required) — the data analogue of `RestRepository`'s verbs: `findById` · `findOne` · `find` · `insert` · `insertMany` · `update` · `updateMany` · `delete` · `deleteMany` · `exists` · `count` · `pluck` · `keymap` · `group` · `paginate` · `run` · `query` (raw `$1…`) · `scalar`. Filters `{ col: value \| value[] \| null }` → `=` / `IN` / `IS NULL`. |
 | [`TransactionalDatabaseRepository<Schema>`](./src/repository/general/TransactionalDatabaseRepository.ts) | Adds commit / rollback-on-throw, error-translated. |
 
 > [!IMPORTANT]

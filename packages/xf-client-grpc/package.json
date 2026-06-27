@@ -1,0 +1,51 @@
+{
+  "name": "@xfcfam/xf-client-grpc",
+  "version": "0.0.0",
+  "private": true,
+  "description": "gRPC outbound client for the XF Architecture Model (sketch) \u2014 the @xfcfam/xf-client contract over @grpc/grpc-js. Unary RPCs map onto the pipeline; the protobuf binding is a documented TODO.",
+  "author": "XF Contributors",
+  "license": "MIT",
+  "homepage": "https://xfcfam.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xfcfam/lib-npm",
+    "directory": "packages/xf-client-grpc"
+  },
+  "keywords": [
+    "xf",
+    "cfam",
+    "client",
+    "grpc"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "@xfcfam/xf": "workspace:^",
+    "@xfcfam/xf-client": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
+  }
+}
