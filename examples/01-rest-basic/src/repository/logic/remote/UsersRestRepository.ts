@@ -20,11 +20,13 @@ export class UsersRestRepository extends RetryRestRepository {
     })
   }
 
-  fetchUser(id: number): Promise<User> {
-    return this.withRetry(() => this.get<User>(`/users/${id}`))
+  async fetchUser(id: number): Promise<User> {
+    const res = await this.withRetry(() => this.get<User>(`/users/${id}`))
+    return res.body
   }
 
-  fetchAll(): Promise<User[]> {
-    return this.withRetry(() => this.get<User[]>('/users'))
+  async fetchAll(): Promise<User[]> {
+    const res = await this.withRetry(() => this.get<User[]>('/users'))
+    return res.body
   }
 }

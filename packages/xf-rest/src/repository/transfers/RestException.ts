@@ -28,16 +28,25 @@ export class RestException extends Error {
   readonly status: number
   /** HTTP status text returned by the server. */
   readonly statusText: string
+  /** Response headers, lowercased name → value. */
+  readonly headers: Readonly<Record<string, string>>
   /** Parsed response body (JSON when possible, otherwise raw text). */
   readonly body: unknown
   /** The originating request, after `interceptor` transformations. */
   readonly request: Request
 
-  constructor(status: number, statusText: string, body: unknown, request: Request) {
+  constructor(
+    status: number,
+    statusText: string,
+    headers: Readonly<Record<string, string>>,
+    body: unknown,
+    request: Request,
+  ) {
     super(`HTTP ${status} ${statusText} — ${request.method} ${request.path}`)
     this.name = 'RestException'
     this.status = status
     this.statusText = statusText
+    this.headers = headers
     this.body = body
     this.request = request
   }

@@ -17,6 +17,7 @@
 // ── Access — base ─────────────────────────────────────────
 export { DatabaseRepository } from './src/repository/general/DatabaseRepository.js'
 export type { DatabaseOptions } from './src/repository/general/DatabaseRepository.js'
+export type { Filters, Pagination, PageOptions, Primitive } from './src/repository/transfers/Crud.js'
 export { TransactionalDatabaseRepository } from './src/repository/general/TransactionalDatabaseRepository.js'
 
 // ── Access — structs (Exceptions) ─────────────────────────

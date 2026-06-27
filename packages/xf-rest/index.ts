@@ -30,6 +30,7 @@ export { RetryRestRepository } from './src/repository/general/RetryRestRepositor
 
 // ── Access — structs ──────────────────────────────────────
 export type { Request, HttpMethod } from './src/repository/transfers/Request.js'
+export type { HttpResponse } from './src/repository/transfers/HttpResponse.js'
 export { RestException } from './src/repository/transfers/RestException.js'
 export { ConnectionException } from './src/repository/transfers/ConnectionException.js'
 

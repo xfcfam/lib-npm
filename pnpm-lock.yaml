@@ -145,6 +145,95 @@ importers:
         specifier: ^4.1.8
         version: 4.1.8(@types/node@25.9.3)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
 
+  packages/xf-client:
+    dependencies:
+      '@xfcfam/xf':
+        specifier: workspace:^
+        version: link:../xf
+    devDependencies:
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.8
+        version: 4.1.8(@types/node@25.9.3)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
+
+  packages/xf-client-grpc:
+    dependencies:
+      '@xfcfam/xf':
+        specifier: workspace:^
+        version: link:../xf
+      '@xfcfam/xf-client':
+        specifier: workspace:^
+        version: link:../xf-client
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.3
+        version: 25.9.3
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.8
+        version: 4.1.8(@types/node@25.9.3)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
+
+  packages/xf-client-http:
+    dependencies:
+      '@xfcfam/xf':
+        specifier: workspace:^
+        version: link:../xf
+      '@xfcfam/xf-client':
+        specifier: workspace:^
+        version: link:../xf-client
+      ky:
+        specifier: ^2.0.2
+        version: 2.0.2
+    devDependencies:
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.8
+        version: 4.1.8(@types/node@25.9.3)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
+
+  packages/xf-client-tcp:
+    dependencies:
+      '@xfcfam/xf':
+        specifier: workspace:^
+        version: link:../xf
+      '@xfcfam/xf-client':
+        specifier: workspace:^
+        version: link:../xf-client
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.3
+        version: 25.9.3
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.8
+        version: 4.1.8(@types/node@25.9.3)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
+
+  packages/xf-client-udp:
+    dependencies:
+      '@xfcfam/xf':
+        specifier: workspace:^
+        version: link:../xf
+      '@xfcfam/xf-client':
+        specifier: workspace:^
+        version: link:../xf-client
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.3
+        version: 25.9.3
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.8
+        version: 4.1.8(@types/node@25.9.3)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
+
   packages/xf-fs:
     dependencies:
       '@xfcfam/xf':
