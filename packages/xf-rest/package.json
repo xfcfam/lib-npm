@@ -1,6 +1,6 @@
 {
   "name": "@xfcfam/xf-rest",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "REST Access Layer Generalization for the XF Architecture Model — encapsulates the ky HTTP client.",
   "author": "XF Contributors",
   "license": "MIT",
