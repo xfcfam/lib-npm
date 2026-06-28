@@ -1,6 +1,6 @@
 {
   "name": "@xfcfam/xf-fs",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Filesystem Access Layer Generalization for the XF Architecture Model — encapsulates local-disk file operations (node:fs).",
   "author": "XF Contributors",
   "license": "MIT",

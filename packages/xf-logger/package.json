@@ -1,6 +1,6 @@
 {
   "name": "@xfcfam/xf-logger",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Logging Access Layer Generalization for the XF Architecture Model — console-default logger with overridable format/policy and pluggable Business 'trees' for multiplexing. Pair with @xfcfam/xf-logger-file for rotating file output.",
   "author": "XF Contributors",
   "license": "MIT",
