@@ -1,5 +1,13 @@
 # `@xfcfam/xf-sql-postgres`
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @xfcfam/xf@0.3.0
+  - @xfcfam/xf-sql@1.0.0
+
 ## 0.2.0
 
 ### Minor Changes

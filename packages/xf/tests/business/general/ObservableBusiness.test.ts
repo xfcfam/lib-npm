@@ -81,4 +81,35 @@ describe('ObservableBusiness', () => {
     await a.terminate()
     await b.terminate()
   })
+
+  it('notify(data) sets the state before fanning out to observers', async () => {
+    const c = new CounterBusiness()
+    await c.init()
+    const seen: State[] = []
+    c.observe(s => { seen.push(s) })
+    c.notify({ count: 7 })
+    expect(seen).toEqual([{ count: 7 }])
+    await c.terminate()
+  })
+
+  it('observe(observer, true) fires immediately with the current state', async () => {
+    const c = new CounterBusiness()
+    await c.init()
+    c.notify({ count: 5 })            // set state (no observers yet)
+    const seen: State[] = []
+    c.observe(s => { seen.push(s) }, true)
+    expect(seen).toEqual([{ count: 5 }])
+    await c.terminate()
+  })
+
+  it('isolates observer errors so the others still run', async () => {
+    const c = new CounterBusiness()
+    await c.init()
+    let reached = false
+    c.observe(() => { throw new Error('boom') })
+    c.observe(() => { reached = true })
+    expect(() => c.notify()).not.toThrow()
+    expect(reached).toBe(true)
+    await c.terminate()
+  })
 })

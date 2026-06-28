@@ -1,6 +1,6 @@
 {
   "name": "@xfcfam/xf-kv-memcached",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Memcached adapter for @xfcfam/xf-kv — implements the key-value / cache Access contract over memjs.",
   "author": "XF Contributors",
   "license": "MIT",

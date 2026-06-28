@@ -1,6 +1,6 @@
 {
   "name": "@xfcfam/xf-react-view",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "React presentation Generalizations for the XF Architecture Model — the ReactView / ObservableReactView / StatelessReactView Mixin Generalizations that graft the Interaction-Layer View onto a React.Component peer base.",
   "author": "XF Contributors",
   "license": "MIT",

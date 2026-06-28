@@ -1,6 +1,6 @@
 {
   "name": "@xfcfam/xf-kv",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Key-value / cache Access Layer Generalization for the XF Architecture Model — transport-agnostic contract. Pair with @xfcfam/xf-kv-redis / @xfcfam/xf-kv-memcached / etc.",
   "author": "XF Contributors",
   "license": "MIT",

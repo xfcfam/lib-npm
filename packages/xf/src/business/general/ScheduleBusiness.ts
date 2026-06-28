@@ -33,13 +33,25 @@ export abstract class ScheduleBusiness<T> extends Business<T> {
   protected onTickComplete(): void {}
 
   /**
+   * Hook invoked when a {@link run} rejects. Default no-op (the error is
+   * swallowed so a single failed tick never aborts the schedule). Override
+   * to log or react.
+   *
+   * @param error  The rejection thrown by {@link run}.
+   */
+  protected onError(error: unknown): void {}
+
+  /**
    * (Re)schedule {@link run} every `ms` milliseconds. Replaces any
    * existing interval.
    *
-   * @param ms  Interval in milliseconds.
+   * @param ms             Interval in milliseconds.
+   * @param runImmediately When `true`, runs one tick now (before the first
+   *                       interval elapses). Default `false`.
    */
-  interval(ms: number): void {
+  interval(ms: number, runImmediately = false): void {
     if (this.intervalId !== undefined) clearInterval(this.intervalId)
+    if (runImmediately) void this.tick()
     this.intervalId = setInterval(() => { void this.tick() }, ms)
   }
 
@@ -55,8 +67,12 @@ export abstract class ScheduleBusiness<T> extends Business<T> {
   }
 
   private async tick(): Promise<void> {
-    await this.run()
-    this.onTickComplete()
+    try {
+      await this.run()
+      this.onTickComplete()
+    } catch (error) {
+      this.onError(error)
+    }
   }
 
   /**

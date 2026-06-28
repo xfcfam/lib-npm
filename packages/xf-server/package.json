@@ -1,6 +1,6 @@
 {
   "name": "@xfcfam/xf-server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Transport-agnostic inbound-server contract for the XF Architecture Model — the abstract ServerBusiness / EntryService bases shared by every @xfcfam/xf-server-* protocol package.",
   "author": "XF Contributors",
   "license": "MIT",

@@ -1,6 +1,6 @@
 {
   "name": "@xfcfam/xf",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Core XF Architecture Model library — base Generalizations and Injections for TypeScript",
   "author": "XF Contributors",
   "license": "MIT",
