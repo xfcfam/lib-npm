@@ -170,6 +170,26 @@ export abstract class HttpServerBusiness extends ServerBusiness<HttpAddress, Htt
   }
 
   /**
+   * Register the same handler for **every** HTTP method on a path — a
+   * catch-all. Combine with a wildcard path (`/*`) for gateways / reverse
+   * proxies / BFFs that intercept all verbs and route by the real
+   * `request.path`.
+   */
+  any(path: string, handler: HttpHandler): void {
+    for (const method of HttpServerBusiness.METHODS) this.call(method, path, handler)
+  }
+
+  /**
+   * Methods registered by {@link any}. `HEAD` is omitted on purpose: Fastify
+   * exposes a HEAD route for every GET automatically (routing it to the same
+   * handler), so registering HEAD too would clash. The handler still sees the
+   * real verb via `request.method`.
+   */
+  private static readonly METHODS: readonly HttpMethod[] = [
+    'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS',
+  ]
+
+  /**
    * Register a WebSocket endpoint. The handler receives a
    * {@link WebSocketConnection} once the client upgrade completes. The
    * WebSocket plugin runs on the same Fastify instance and port as the
@@ -217,7 +237,7 @@ export abstract class HttpServerBusiness extends ServerBusiness<HttpAddress, Htt
       instance.route({
         method: route.address.method,
         url: route.address.path,
-        handler: this.adapter(route.address.method, route.address.path, route.handler),
+        handler: this.adapter(route.handler),
       })
     }
 
@@ -261,18 +281,16 @@ export abstract class HttpServerBusiness extends ServerBusiness<HttpAddress, Htt
   // ─── Internals ─────────────────────────────────────────────
 
   private adapter(
-    method: HttpMethod,
-    path: string,
     handler: HttpHandler,
   ): (req: FastifyRequest, reply: FastifyReply) => Promise<void> {
     return async (fastifyReq, fastifyReply) => {
-      const req = await HttpServerBusiness.request(fastifyReq, method, path)
+      const req = await HttpServerBusiness.request(fastifyReq)
       const res = await this.dispatch(req, handler, HttpServerBusiness.errorToResponse)
       await HttpServerBusiness.sendResponse(fastifyReply, res)
     }
   }
 
-  private static async request(fr: FastifyRequest, method: HttpMethod, path: string): Promise<HttpRequest> {
+  private static async request(fr: FastifyRequest): Promise<HttpRequest> {
     let body: unknown = fr.body
     // If @fastify/multipart is active and this is a multipart request,
     // collect the parts into our MultipartPart[] shape so handlers
@@ -281,8 +299,15 @@ export abstract class HttpServerBusiness extends ServerBusiness<HttpAddress, Htt
     if (contentType.startsWith('multipart/') && typeof (fr as { parts?: unknown }).parts === 'function') {
       body = await HttpServerBusiness.collectMultipart(fr as FastifyRequest & { parts: () => AsyncIterable<unknown> })
     }
+    // Resolved path (after route matching): the actual request path, not the
+    // route pattern — so `:param` and wildcard (`/*`) routes see the real URL.
+    const url = fr.url ?? '/'
+    const q = url.indexOf('?')
+    const path = q === -1 ? url : url.slice(0, q)
     return {
-      method,
+      // Actual request method (not the registered route's) — so a GET route's
+      // auto-HEAD is seen as `HEAD`, and catch-all handlers see the real verb.
+      method: fr.method as HttpMethod,
       path,
       params: fr.params as Readonly<Record<string, string>>,
       query: fr.query as Readonly<Record<string, string | readonly string[]>>,
