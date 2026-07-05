@@ -46,11 +46,11 @@
     "@xfcfam/xf-sql": "workspace:^"
   },
   "dependencies": {
-    "pg": "^8.21.0"
+    "pg": "^8.22.0"
   },
   "devDependencies": {
     "typescript": "^6.0.3",
-    "vitest": "^4.1.8",
+    "vitest": "^4.1.9",
     "kysely": "^0.29.2",
     "@types/pg": "^8.11.0"
   }
