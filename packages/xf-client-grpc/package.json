@@ -2,7 +2,7 @@
   "name": "@xfcfam/xf-client-grpc",
   "version": "0.0.0",
   "private": true,
-  "description": "gRPC outbound client for the XF Architecture Model (sketch) \u2014 the @xfcfam/xf-client contract over @grpc/grpc-js. Unary RPCs map onto the pipeline; the protobuf binding is a documented TODO.",
+  "description": "gRPC outbound client for the XF Architecture Model (sketch) — the @xfcfam/xf-client contract over @grpc/grpc-js. Unary RPCs map onto the pipeline; the protobuf binding is a documented TODO.",
   "author": "XF Contributors",
   "license": "MIT",
   "homepage": "https://xfcfam.org",

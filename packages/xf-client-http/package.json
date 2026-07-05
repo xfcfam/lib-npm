@@ -1,6 +1,6 @@
 {
   "name": "@xfcfam/xf-client-http",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "HTTP REST outbound client for the XF Architecture Model — the Access-layer counterpart of @xfcfam/xf-server-http. The ky implementation of the @xfcfam/xf-client contract.",
   "author": "XF Contributors",
   "license": "MIT",
