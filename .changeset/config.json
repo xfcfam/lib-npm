@@ -2,12 +2,20 @@
   "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
-  "fixed": [],
+  "fixed": [["@xfcfam/*"]],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@xfcfam-examples/*"],
+  "ignore": [
+    "@xfcfam-examples/*",
+    "@xfcfam/xf-client-grpc",
+    "@xfcfam/xf-client-tcp",
+    "@xfcfam/xf-client-udp",
+    "@xfcfam/xf-server-grpc",
+    "@xfcfam/xf-server-tcp",
+    "@xfcfam/xf-server-udp"
+  ],
   "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
     "onlyUpdatePeerDependentsWhenOutOfRange": true
   }
