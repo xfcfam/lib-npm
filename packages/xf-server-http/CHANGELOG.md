@@ -1,5 +1,13 @@
 # @xfcfam/xf-server-http
 
+## 1.0.0
+
+### Patch Changes
+
+- Updated dependencies [80407e6]
+  - @xfcfam/xf@1.0.0
+  - @xfcfam/xf-server@1.0.0
+
 ## 0.2.0
 
 ### Minor Changes

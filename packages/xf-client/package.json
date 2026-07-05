@@ -1,6 +1,6 @@
 {
   "name": "@xfcfam/xf-client",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Transport-agnostic outbound client contract for the XF Architecture Model — the Access-layer counterpart of @xfcfam/xf-server.",
   "author": "XF Contributors",
   "license": "MIT",
