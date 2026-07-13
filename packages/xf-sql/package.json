@@ -40,13 +40,13 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "kysely": "^0.29.2"
+    "kysely": "^0.29.3"
   },
   "peerDependencies": {
     "@xfcfam/xf": "workspace:^"
   },
   "devDependencies": {
     "typescript": "^6.0.3",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.10"
   }
 }
