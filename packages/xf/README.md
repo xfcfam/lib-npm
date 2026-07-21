@@ -40,6 +40,7 @@ class SessionBusiness extends ObservableBusiness<{ userId?: string }> {
 |---|---|---|
 | Access | [`Repository<T>`](./src/repository/general/Repository.ts) · [`StatelessRepository`](./src/repository/general/StatelessRepository.ts) | Base Access generalization; `Stateless` is the zero-state form. |
 | Access | [`ObservableRepository<T>`](./src/repository/general/ObservableRepository.ts) | Observer registry (numeric ids). |
+| Access | [`ConnectableRepository<T>`](./src/repository/general/ConnectableRepository.ts) | Latched connection lifecycle; `onConnect` fires even if you subscribe late. |
 | Access | [`RetryableRepository<T>`](./src/repository/general/RetryableRepository.ts) | Exponential backoff + jitter. |
 | Access | [`PaginatedRepository<T,Item,Cursor>`](./src/repository/general/PaginatedRepository.ts) | Iterate a paginated source. |
 | Access | [`ClockRepository`](./src/repository/general/ClockRepository.ts) | Wraps the system clock; override in tests. |
