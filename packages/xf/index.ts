@@ -5,7 +5,8 @@
  * by layer:
  *
  * - **Access**       — {@link R}, {@link Repository}, {@link StatelessRepository},
- *                       {@link ObservableRepository}, {@link RetryableRepository},
+ *                       {@link ObservableRepository}, {@link ConnectableRepository},
+ *                       {@link RetryableRepository},
  *                       {@link PaginatedRepository}, {@link ClockRepository}
  * - **Business**     — {@link B}, {@link Business}, {@link StatelessBusiness},
  *                       {@link ObservableBusiness}, {@link ScheduleBusiness},
@@ -28,6 +29,8 @@ export { R } from './src/repository/R.js'
 export { Repository } from './src/repository/general/Repository.js'
 export { StatelessRepository } from './src/repository/general/StatelessRepository.js'
 export { ObservableRepository } from './src/repository/general/ObservableRepository.js'
+export { ConnectableRepository } from './src/repository/general/ConnectableRepository.js'
+export type { ConnectionListener } from './src/repository/general/ConnectableRepository.js'
 export { RetryableRepository } from './src/repository/general/RetryableRepository.js'
 export type { RetryOptions } from './src/repository/general/RetryableRepository.js'
 export { PaginatedRepository } from './src/repository/general/PaginatedRepository.js'

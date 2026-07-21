@@ -1,4 +1,4 @@
-import { Repository, NotInitializedException } from '@xfcfam/xf'
+import { ConnectableRepository, NotInitializedException } from '@xfcfam/xf'
 import { Kysely, sql, type Dialect } from 'kysely'
 import type { Filters, PageOptions, Pagination, Primitive } from '../transfers/Crud.js'
 
@@ -59,6 +59,17 @@ interface InternalState {
  *  exposes explicit transaction control.
  *
  * ──────────────────────────────────────────────────────────────────
+ *  Connection listeners
+ * ──────────────────────────────────────────────────────────────────
+ * The hooks above are for *subclasses*. Other components — a Business
+ * that must load a catalog once the pool is up — subscribe instead
+ * through `onConnect(listener)`, inherited from
+ * `ConnectableRepository`. That subscription is **latched**: because
+ * XF bootstraps `R` before `B`, the connection is normally already
+ * open by the time a Business subscribes, and the listener fires
+ * immediately rather than waiting for an event that has passed.
+ *
+ * ──────────────────────────────────────────────────────────────────
  *  Error translation
  * ──────────────────────────────────────────────────────────────────
  * Dialect-specific errors (driver Error objects) are not translated
@@ -104,7 +115,7 @@ interface InternalState {
  * }
  * ```
  */
-export abstract class DatabaseRepository<Schema = unknown> extends Repository<null> {
+export abstract class DatabaseRepository<Schema = unknown> extends ConnectableRepository<null> {
   private static readonly state = new WeakMap<object, InternalState>()
 
   /** Options provided at construction time. */
@@ -147,6 +158,10 @@ export abstract class DatabaseRepository<Schema = unknown> extends Repository<nu
     })
     DatabaseRepository.state.set(this, { db })
     await this.onConnected()
+    // After the subclass hook, so its own setup is done before consumers run.
+    // Latched: a listener registered later (B.init(), which by XF's downward
+    // bootstrap always runs after this) still fires. See ConnectableRepository.
+    await this.markConnected()
   }
 
   /**
@@ -158,6 +173,8 @@ export abstract class DatabaseRepository<Schema = unknown> extends Repository<nu
     if (s !== undefined) {
       await s.db.destroy()
       DatabaseRepository.state.delete(this)
+      // Mirror image of init(): listeners first, subclass hook last.
+      await this.markDisconnected()
       await this.onDisconnected()
     }
   }
