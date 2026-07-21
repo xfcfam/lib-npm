@@ -60,7 +60,7 @@ export type ConnectionListener = () => void | Promise<void>
  *   async terminate() { await this.markDisconnected();  await this.client.quit()      }
  * }
  *
- * // In B.init(), long after R.init() has finished — still fires:
+ * // Registered from Business init(), long after the Access layer connected — still fires:
  * R.cache.onConnect(() => this.interval(5 * 60_000, true))
  * ```
  */

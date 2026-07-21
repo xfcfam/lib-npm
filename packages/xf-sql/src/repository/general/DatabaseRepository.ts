@@ -159,8 +159,8 @@ export abstract class DatabaseRepository<Schema = unknown> extends ConnectableRe
     DatabaseRepository.state.set(this, { db })
     await this.onConnected()
     // After the subclass hook, so its own setup is done before consumers run.
-    // Latched: a listener registered later (B.init(), which by XF's downward
-    // bootstrap always runs after this) still fires. See ConnectableRepository.
+    // Latched: a listener registered later from Business init() — which by XF's
+    // downward bootstrap always runs after this — still fires. See ConnectableRepository.
     await this.markConnected()
   }
 
