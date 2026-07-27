@@ -16,6 +16,19 @@ export interface PostgresOptions {
   connectionString?: string
   /** Extra `pg.PoolConfig` fields: `max`, `idleTimeoutMillis`, `ssl`, … */
   pool?: PoolConfig
+  /**
+   * Bridge `camelCase` code and a `snake_case` schema, in both directions.
+   * Defaults to `false`. Forwarded verbatim to `DatabaseOptions` in
+   * `@xfcfam/xf-sql`; see that field for the exact scope.
+   *
+   * Worth turning on for most Postgres schemas, where `snake_case` columns
+   * are the convention and the surrounding TypeScript is `camelCase`.
+   *
+   * The one thing to keep in mind: raw `sql` fragments are not rewritten on
+   * the way in — write those in `snake_case` — but their results ARE mapped
+   * back like any other row.
+   */
+  camelToSnake?: boolean
 }
 
 /**
@@ -88,7 +101,10 @@ export abstract class PostgresDatabaseRepository<Schema = unknown>
       poolConfig.connectionString = options.connectionString
     }
     const pool = new Pool(poolConfig)
-    super({ dialect: new PostgresDialect({ pool }) })
+    super({
+      dialect: new PostgresDialect({ pool }),
+      ...(options.camelToSnake !== undefined ? { camelToSnake: options.camelToSnake } : {}),
+    })
   }
 
   /**
