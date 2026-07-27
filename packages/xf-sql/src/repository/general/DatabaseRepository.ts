@@ -1,5 +1,5 @@
 import { ConnectableRepository, NotInitializedException } from '@xfcfam/xf'
-import { Kysely, sql, type Dialect } from 'kysely'
+import { CamelCasePlugin, Kysely, sql, type Dialect } from 'kysely'
 import type { Filters, PageOptions, Pagination, Primitive } from '../transfers/Crud.js'
 
 /**
@@ -12,6 +12,31 @@ import type { Filters, PageOptions, Pagination, Primitive } from '../transfers/C
 export interface DatabaseOptions {
   /** Kysely Dialect implementation (Postgres, MySQL, SQLite, …). */
   dialect: Dialect
+  /**
+   * Bridge `camelCase` code and a `snake_case` schema, in BOTH directions.
+   * Defaults to `false` — identifiers and rows are left exactly as they are.
+   *
+   * Enable it when the implementer's code speaks `camelCase` (`deviceId`,
+   * `createdDate`) but the schema is `snake_case` (`device_id`,
+   * `created_date`), which is the usual Postgres convention.
+   *
+   *  - GOING IN, every identifier Kysely puts in a query is written
+   *    `snake_case`: columns in `values(...)`, `set(...)`, `where(...)`,
+   *    `select(...)` and `orderBy(...)`, plus table names.
+   *  - COMING BACK, result row keys are mapped to `camelCase`, so the objects
+   *    handed to the Business Layer match the domain types that describe them.
+   *
+   * Both halves are needed to be useful: converting only on the way in leaves
+   * every read returning `snake_case` keys into code that declares `camelCase`
+   * ones, which does not fail loudly — it silently yields `undefined`.
+   *
+   * Raw `sql` fragments are NOT rewritten on the way in: Kysely transforms the
+   * query AST, and a raw fragment is opaque to it, so write those in
+   * `snake_case`. Their RESULTS are still mapped on the way back, like any
+   * other row — which is usually what you want, but it does mean a raw query
+   * returning `device_location_city` hands back `deviceLocationCity`.
+   */
+  camelToSnake?: boolean
 }
 
 interface InternalState {
@@ -146,6 +171,10 @@ export abstract class DatabaseRepository<Schema = unknown> extends ConnectableRe
   async init(): Promise<void> {
     const db = new Kysely<Schema>({
       dialect: this.options.dialect,
+      // Off unless asked for: the plugin rewrites identifiers AND remaps result
+      // keys, so enabling it by default would change both the SQL and the shape
+      // of every row for every existing implementer on upgrade.
+      ...(this.options.camelToSnake === true ? { plugins: [new CamelCasePlugin()] } : {}),
       log: (event) => {
         if (event.level === 'query') {
           this.onQuery(event.query.sql, event.query.parameters)
