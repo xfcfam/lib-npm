@@ -43,7 +43,7 @@
     "@xfcfam/xf": "workspace:^"
   },
   "dependencies": {
-    "ky": "^2.0.2"
+    "ky": "^2.1.0"
   },
   "devDependencies": {
     "typescript": "^6.0.3",
